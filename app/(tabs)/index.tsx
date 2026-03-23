@@ -1,98 +1,141 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { useCart } from '../../context/CartContext';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const EXCLUSIVE = [
+  { id: '1', name: 'Natural Red Apple', weight: '1kg', price: 4.99, icon: '🍎' },
+  { id: '2', name: 'Organic Bananas', weight: '7pcs', price: 4.99, icon: '🍌' },
+  { id: '3', name: 'Beef Bone', weight: '1kg', price: 4.99, icon: '🥩' },
+  { id: '4', name: 'Broiler Chicken', weight: '1kg', price: 4.99, icon: '🍗' },
+];
+
+const BEST_SELLING = [
+  { id: '5', name: 'Bell Pepper', weight: '1kg', price: 3.99, icon: '🫑' },
+  { id: '6', name: 'Ginger', weight: '250g', price: 2.99, icon: '🫚' },
+  { id: '7', name: 'Egg Chicken', weight: '4pcs', price: 1.99, icon: '🥚' },
+];
+
+const GROCERIES = [
+  { id: 'pulses', name: 'Pulses', icon: '🫘' },
+  { id: 'rice', name: 'Rice', icon: '🍚' },
+  { id: 'oil', name: 'Cooking Oil', icon: '🫒' },
+  { id: 'bakery', name: 'Bakery', icon: '🍞' },
+];
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const router = useRouter();
+  const { addItem } = useCart();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  return (
+    <ScrollView style={s.container} showsVerticalScrollIndicator={false}>
+      {/* Header */}
+      <View style={s.header}>
+        <View>
+          <Text style={s.location}>📍 Dhaka, Banasree</Text>
+        </View>
+        <View style={s.avatarPlaceholder}>
+          <Text style={s.avatarText}>A</Text>
+        </View>
+      </View>
+
+      {/* Search */}
+      <TouchableOpacity style={s.searchBox} onPress={() => router.push('../search')}>
+        <Ionicons name="search-outline" size={18} color="#aaa" />
+        <Text style={s.searchPlaceholder}>Search Store</Text>
+      </TouchableOpacity>
+
+      {/* Banner */}
+      <View style={s.banner}>
+        <Text style={s.bannerEmoji}>🥦🥕🍅</Text>
+        <View>
+          <Text style={s.bannerTitle}>Fresh Vegetables</Text>
+          <Text style={s.bannerSub}>Get Up to 40% off</Text>
+        </View>
+      </View>
+
+      {/* Exclusive Offer */}
+      <SectionHeader title="Exclusive Offer" />
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.row}>
+        {EXCLUSIVE.map(p => (
+          <ProductCard key={p.id} item={p} onPress={() => router.push({ pathname: '/product/[id]', params: { id: p.id } })} onAdd={() => addItem({ ...p, img: null })} />
+        ))}
+      </ScrollView>
+
+      {/* Best Selling */}
+      <SectionHeader title="Best Selling" />
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.row}>
+        {BEST_SELLING.map(p => (
+          <ProductCard key={p.id} item={p} onPress={() => router.push(`../product/${p.id}`)} onAdd={() => addItem({ ...p, img: null })} />
+        ))}
+      </ScrollView>
+
+      {/* Groceries */}
+      <SectionHeader title="Groceries" />
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.row}>
+        {GROCERIES.map(g => (
+          <TouchableOpacity key={g.id} style={s.groceryCard} onPress={() => router.push(`../category/${g.id}`)}>
+            <Text style={s.groceryIcon}>{g.icon}</Text>
+            <Text style={s.groceryName}>{g.name}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      <View style={{ height: 24 }} />
+    </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+function SectionHeader({ title }: { title: string }) {
+  return (
+    <View style={s.sectionHeader}>
+      <Text style={s.sectionTitle}>{title}</Text>
+      <TouchableOpacity><Text style={s.seeAll}>See all</Text></TouchableOpacity>
+    </View>
+  );
+}
+
+function ProductCard({ item, onPress, onAdd }: { item: any; onPress: () => void; onAdd: () => void }) {
+  return (
+    <TouchableOpacity style={s.card} onPress={onPress}>
+      <Text style={s.cardIcon}>{item.icon}</Text>
+      <Text style={s.cardWeight}>{item.weight}</Text>
+      <Text style={s.cardName}>{item.name}</Text>
+      <View style={s.cardFooter}>
+        <Text style={s.cardPrice}>${item.price.toFixed(2)}</Text>
+        <TouchableOpacity style={s.addBtn} onPress={e => { e.stopPropagation?.(); onAdd(); }}>
+          <Text style={s.addBtnText}>+</Text>
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+const s = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#fff', paddingHorizontal: 16 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 52, marginBottom: 16 },
+  location: { fontSize: 14, fontWeight: '600', color: '#1a1a1a' },
+  avatarPlaceholder: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#4CAF6F', justifyContent: 'center', alignItems: 'center' },
+  avatarText: { color: '#fff', fontWeight: '700' },
+  searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f5f5f5', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, gap: 8, marginBottom: 16 },
+  searchPlaceholder: { fontSize: 14, color: '#aaa' },
+  banner: { backgroundColor: '#4CAF6F', borderRadius: 16, padding: 20, marginBottom: 24, flexDirection: 'row', alignItems: 'center', gap: 16 },
+  bannerEmoji: { fontSize: 40 },
+  bannerTitle: { color: '#fff', fontSize: 18, fontWeight: '700' },
+  bannerSub: { color: '#fff', opacity: 0.85, fontSize: 13, marginTop: 4 },
+  row: { marginBottom: 16 },
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  sectionTitle: { fontSize: 18, fontWeight: '700', color: '#1a1a1a' },
+  seeAll: { fontSize: 14, color: '#4CAF6F' },
+  card: { width: 150, backgroundColor: '#fff', borderRadius: 16, borderWidth: 1, borderColor: '#f0f0f0', padding: 12, marginRight: 12, alignItems: 'center' },
+  cardIcon: { fontSize: 52, marginBottom: 8 },
+  cardWeight: { fontSize: 12, color: '#aaa', marginBottom: 2, alignSelf: 'flex-start' },
+  cardName: { fontSize: 14, fontWeight: '600', color: '#1a1a1a', marginBottom: 8, alignSelf: 'flex-start' },
+  cardFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' },
+  cardPrice: { fontSize: 15, fontWeight: '700', color: '#1a1a1a' },
+  addBtn: { backgroundColor: '#4CAF6F', borderRadius: 8, width: 30, height: 30, justifyContent: 'center', alignItems: 'center' },
+  addBtnText: { color: '#fff', fontSize: 20, lineHeight: 22 },
+  groceryCard: { width: 100, backgroundColor: '#f9f9f9', borderRadius: 16, padding: 12, marginRight: 12, alignItems: 'center' },
+  groceryIcon: { fontSize: 40, marginBottom: 6 },
+  groceryName: { fontSize: 13, fontWeight: '600', color: '#1a1a1a', textAlign: 'center' },
 });

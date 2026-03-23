@@ -1,112 +1,112 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { useCart } from '../../context/CartContext';
+import { ALL_PRODUCTS } from '../../constants/products';
+import React from 'react';
 
-import { Collapsible } from '@/components/ui/collapsible';
-import { ExternalLink } from '@/components/external-link';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
+const CATEGORIES = [
+  { id: 'fruits', name: 'Fresh Fruits & Vegetable', bg: '#E8F5E9', icon: '🥦' },
+  { id: 'oil', name: 'Cooking Oil & Ghee', bg: '#FFF8E1', icon: '🫒' },
+  { id: 'meat', name: 'Meat & Fish', bg: '#FCE4EC', icon: '🥩' },
+  { id: 'bakery', name: 'Bakery & Snacks', bg: '#FFF3E0', icon: '🍞' },
+  { id: 'dairy', name: 'Dairy & Eggs', bg: '#E3F2FD', icon: '🥚' },
+  { id: 'beverages', name: 'Beverages', bg: '#F3E5F5', icon: '🧃' },
+];
 
-export default function TabTwoScreen() {
+
+
+export default function ExploreScreen() {
+  const router = useRouter();
+  const { addItem } = useCart();
+  const [query, setQuery] = useState('');
+
+  const results = ALL_PRODUCTS.filter(p =>
+    p.name.toLowerCase().includes(query.toLowerCase())
+  );
+
+  const showCategories = query.length === 0;
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
+    <View style={s.container}>
+      <Text style={s.title}>Find Products</Text>
+
+      <View style={s.searchBox}>
+        <Ionicons name="search-outline" size={18} color="#aaa" />
+        <TextInput
+          style={s.searchInput}
+          placeholder="Search Store"
+          placeholderTextColor="#aaa"
+          value={query}
+          onChangeText={setQuery}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Explore
-        </ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image
-          source={require('@/assets/images/react-logo.png')}
-          style={{ width: 100, height: 100, alignSelf: 'center' }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful{' '}
-          <ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
-            react-native-reanimated
-          </ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+        {query.length > 0 && (
+          <TouchableOpacity onPress={() => setQuery('')}>
+            <Ionicons name="close-circle" size={18} color="#aaa" />
+          </TouchableOpacity>
+        )}
+      </View>
+
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {showCategories ? (
+          <View style={s.grid}>
+            {CATEGORIES.map(cat => (
+              <TouchableOpacity
+                key={cat.id}
+                style={[s.catCard, { backgroundColor: cat.bg }]}
+                onPress={() => router.push({ pathname: '/category/[name]', params: { name: cat.id } })}
+              >
+                <Text style={s.catIcon}>{cat.icon}</Text>
+                <Text style={s.catName}>{cat.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        ) : (
+          <>
+            {results.length === 0 && <Text style={s.hint}>No results found for "{query}"</Text>}
+            <View style={s.grid}>
+              {results.map(item => (
+                <TouchableOpacity
+                  key={item.id}
+                  style={s.productCard}
+                  onPress={() => router.push({ pathname: '/product/[id]', params: { id: item.id } })}
+                >
+                  <Text style={s.productIcon}>{item.icon}</Text>
+                  <Text style={s.weight}>{item.weight}</Text>
+                  <Text style={s.name}>{item.name}</Text>
+                  <View style={s.footer}>
+                    <Text style={s.price}>${item.price.toFixed(2)}</Text>
+                    <TouchableOpacity style={s.addBtn} onPress={() => addItem({ ...item, img: null })}>
+                      <Ionicons name="add" size={20} color="#fff" />
+                    </TouchableOpacity>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </>
+        )}
+        <View style={{ height: 24 }} />
+      </ScrollView>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
+const s = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#fff', paddingHorizontal: 16, paddingTop: 52 },
+  title: { fontSize: 22, fontWeight: '700', color: '#1a1a1a', marginBottom: 16 },
+  searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f5f5f5', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10, gap: 8, marginBottom: 20 },
+  searchInput: { flex: 1, fontSize: 14, color: '#1a1a1a' },
+  hint: { textAlign: 'center', color: '#aaa', marginTop: 40, fontSize: 14 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, paddingBottom: 24 },
+  catCard: { width: '47%', borderRadius: 16, padding: 16, alignItems: 'center' },
+  catIcon: { fontSize: 48, marginBottom: 8 },
+  catName: { fontSize: 13, fontWeight: '600', color: '#1a1a1a', textAlign: 'center' },
+  productCard: { width: '47%', borderWidth: 1, borderColor: '#f0f0f0', borderRadius: 16, padding: 12, alignItems: 'center' },
+  productIcon: { fontSize: 52, marginBottom: 8 },
+  weight: { fontSize: 11, color: '#aaa', marginBottom: 2, alignSelf: 'flex-start' },
+  name: { fontSize: 13, fontWeight: '600', color: '#1a1a1a', marginBottom: 8, alignSelf: 'flex-start' },
+  footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' },
+  price: { fontSize: 15, fontWeight: '700', color: '#1a1a1a' },
+  addBtn: { backgroundColor: '#4CAF6F', borderRadius: 8, width: 30, height: 30, justifyContent: 'center', alignItems: 'center' },
 });
