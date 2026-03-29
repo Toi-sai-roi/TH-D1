@@ -35,7 +35,7 @@ const CATEGORY_PRODUCTS: Record<string, any[]> = {
   dairy: [
     { id: 'd1', name: 'Fresh Milk', weight: '1L', price: 1.99, icon: '🥛' },
     { id: 'd2', name: 'Butter', weight: '250g', price: 3.50, icon: '🧈' },
-    { id: 'd3', name: 'Eggs', weight: '12pcs', price: 2.99, icon: '🥚' },
+    { id: 'd3', name: 'Egg Duck', weight: '12pcs', price: 2.99, icon: '🥚' },
     { id: 'f2', name: 'Egg Chicken White', weight: '180g', price: 1.50, icon: '🥚' },
     { id: '7', name: 'Egg Chicken', weight: '4pcs', price: 1.99, icon: '🥚' },
   ],
@@ -63,7 +63,6 @@ const CATEGORY_TITLES: Record<string, string> = {
 export default function CategoryScreen() {
   const { name } = useLocalSearchParams<{ name: string }>();
   const router = useRouter();
-  const { addItem } = useCart();
 
   const products = CATEGORY_PRODUCTS[name] ?? CATEGORY_PRODUCTS['beverages'];
   const title = CATEGORY_TITLES[name] ?? name;
@@ -90,10 +89,15 @@ export default function CategoryScreen() {
             >
               <Text style={s.icon}>{item.icon}</Text>
               <Text style={s.volume}>{item.weight}</Text>
-              <Text style={s.name}>{item.name}</Text>
+              {/* fix 1: numberOfLines={2} */}
+              <Text style={s.name} numberOfLines={2}>{item.name}</Text>
               <View style={s.footer}>
                 <Text style={s.price}>${item.price.toFixed(2)}</Text>
-                <TouchableOpacity style={s.addBtn} onPress={() => addItem({ ...item, img: null })}>
+                {/* fix 2: nút + navigate giống bấm card */}
+                <TouchableOpacity
+                  style={s.addBtn}
+                  onPress={() => router.push({ pathname: '/product/[id]', params: { id: item.id } })}
+                >
                   <Ionicons name="add" size={20} color="#fff" />
                 </TouchableOpacity>
               </View>
@@ -111,10 +115,10 @@ const s = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 },
   title: { fontSize: 18, fontWeight: '700', color: '#1a1a1a' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  card: { width: '47%', borderWidth: 1, borderColor: '#f0f0f0', borderRadius: 16, padding: 12, alignItems: 'center' },
+  card: { width: '47%', borderWidth: 1, borderColor: '#f0f0f0', borderRadius: 16, padding: 12, alignItems: 'center', minHeight: 180, justifyContent: 'space-between' },
   icon: { fontSize: 52, marginBottom: 8 },
   volume: { fontSize: 11, color: '#aaa', marginBottom: 2, alignSelf: 'flex-start' },
-  name: { fontSize: 13, fontWeight: '600', color: '#1a1a1a', marginBottom: 8, alignSelf: 'flex-start' },
+  name: { fontSize: 13, fontWeight: '600', color: '#1a1a1a', marginBottom: 8, alignSelf: 'flex-start', height: 36 },
   footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' },
   price: { fontSize: 15, fontWeight: '700', color: '#1a1a1a' },
   addBtn: { backgroundColor: '#4CAF6F', borderRadius: 8, width: 30, height: 30, justifyContent: 'center', alignItems: 'center' },

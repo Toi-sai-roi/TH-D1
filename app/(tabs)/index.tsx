@@ -4,10 +4,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useCart } from '../../context/CartContext';
 
 const EXCLUSIVE = [
-  { id: '1', name: 'Natural Red Apple', weight: '1kg', price: 4.99, icon: '🍎' },
-  { id: '2', name: 'Organic Bananas', weight: '7pcs', price: 4.99, icon: '🍌' },
-  { id: '3', name: 'Beef Bone', weight: '1kg', price: 4.99, icon: '🥩' },
-  { id: '4', name: 'Broiler Chicken', weight: '1kg', price: 4.99, icon: '🍗' },
+  { id: '1', name: 'Natural Red Apple', weight: '1kg', price: 1.99, icon: '🍎' },
+  { id: '2', name: 'Organic Bananas', weight: '1kg', price: 2.99, icon: '🍌' },
+  { id: '3', name: 'Beef', weight: '1kg', price: 5.99, icon: '🥩' },
+  { id: '4', name: 'Broiler Chicken', weight: '1kg', price: 6.99, icon: '🍗' },
 ];
 
 const BEST_SELLING = [
@@ -31,14 +31,11 @@ export default function HomeScreen() {
     <ScrollView style={s.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
       <View style={s.header}>
-        <View>
-          <Text style={s.location}>📍 Dhaka, Banasree</Text>
-        </View>
-        <View style={s.avatarPlaceholder}>
-          <Text style={s.avatarText}>A</Text>
-        </View>
+        <Text style={s.logo}>🥕</Text>
+        <Text style={s.location}>📍 Dhaka, Banasree</Text>
+        
       </View>
-
+      
       {/* Search */}
       <TouchableOpacity style={s.searchBox} onPress={() => router.push('../search')}>
         <Ionicons name="search-outline" size={18} color="#aaa" />
@@ -103,7 +100,8 @@ function ProductCard({ item, onPress, onAdd }: { item: any; onPress: () => void;
       <Text style={s.cardName}>{item.name}</Text>
       <View style={s.cardFooter}>
         <Text style={s.cardPrice}>${item.price.toFixed(2)}</Text>
-        <TouchableOpacity style={s.addBtn} onPress={e => { e.stopPropagation?.(); onAdd(); }}>
+        {/* Xoá onAdd() thay bằng onPress gọi luôn onPress của card */}
+        <TouchableOpacity style={s.addBtn} onPress={onPress}>
           <Text style={s.addBtnText}>+</Text>
         </TouchableOpacity>
       </View>
@@ -113,8 +111,9 @@ function ProductCard({ item, onPress, onAdd }: { item: any; onPress: () => void;
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', paddingHorizontal: 16 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 52, marginBottom: 16 },
-  location: { fontSize: 14, fontWeight: '600', color: '#1a1a1a' },
+  header: { alignItems: 'center', marginTop: 50, marginBottom: 16 },
+  logo: { fontSize: 40, marginBottom: 6},
+  location: { fontSize: 14, color: '#777' },
   avatarPlaceholder: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#4CAF6F', justifyContent: 'center', alignItems: 'center' },
   avatarText: { color: '#fff', fontWeight: '700' },
   searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f5f5f5', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, gap: 8, marginBottom: 16 },
@@ -130,7 +129,7 @@ const s = StyleSheet.create({
   card: { width: 150, backgroundColor: '#fff', borderRadius: 16, borderWidth: 1, borderColor: '#f0f0f0', padding: 12, marginRight: 12, alignItems: 'center' },
   cardIcon: { fontSize: 52, marginBottom: 8 },
   cardWeight: { fontSize: 12, color: '#aaa', marginBottom: 2, alignSelf: 'flex-start' },
-  cardName: { fontSize: 14, fontWeight: '600', color: '#1a1a1a', marginBottom: 8, alignSelf: 'flex-start' },
+  cardName: { fontSize: 14, fontWeight: '600', color: '#1a1a1a', marginBottom: 8, alignSelf: 'flex-start', height: 40, },
   cardFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' },
   cardPrice: { fontSize: 15, fontWeight: '700', color: '#1a1a1a' },
   addBtn: { backgroundColor: '#4CAF6F', borderRadius: 8, width: 30, height: 30, justifyContent: 'center', alignItems: 'center' },

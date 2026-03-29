@@ -1,9 +1,16 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { useCart } from '../context/CartContext';
 
 export default function OrderSuccessScreen() {
   const router = useRouter();
+  const { placeOrder } = useCart();
+
+  useEffect(() => {
+    placeOrder(); // lưu order + clear cart ngay khi vào màn này
+  }, []);
 
   return (
     <View style={s.container}>
@@ -14,11 +21,11 @@ export default function OrderSuccessScreen() {
       <Text style={s.title}>Your Order has been{'\n'}accepted</Text>
       <Text style={s.sub}>Your items has been placed and is on its way to being processed.</Text>
 
-      <TouchableOpacity style={s.trackBtn} onPress={() => router.push('../(tabs)')}>
-        <Text style={s.trackText}>Track Order</Text>
+      <TouchableOpacity style={s.trackBtn} onPress={() => router.push('/(tabs)/account')}>
+        <Text style={s.trackText}>View Order History</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={s.homeBtn} onPress={() => router.replace('../(tabs)')}>
+      <TouchableOpacity style={s.homeBtn} onPress={() => router.replace('/(tabs)')}>
         <Text style={s.homeText}>Back to home</Text>
       </TouchableOpacity>
     </View>

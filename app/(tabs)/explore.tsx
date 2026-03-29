@@ -101,7 +101,7 @@ const s = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, paddingBottom: 24 },
   catCard: { width: '47%', borderRadius: 16, padding: 16, alignItems: 'center' },
   catIcon: { fontSize: 48, marginBottom: 8 },
-  catName: { fontSize: 13, fontWeight: '600', color: '#1a1a1a', textAlign: 'center' },
+  catName: { fontSize: 13, fontWeight: '600', color: '#1a1a1a', textAlign: 'center', height: 40 },
   productCard: { width: '47%', borderWidth: 1, borderColor: '#f0f0f0', borderRadius: 16, padding: 12, alignItems: 'center' },
   productIcon: { fontSize: 52, marginBottom: 8 },
   weight: { fontSize: 11, color: '#aaa', marginBottom: 2, alignSelf: 'flex-start' },

@@ -1,9 +1,10 @@
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { useCart } from '../../context/CartContext';
 
 const MENU = [
-  { label: 'Orders', icon: 'receipt-outline' },
   { label: 'My Details', icon: 'person-outline' },
   { label: 'Delivery Address', icon: 'location-outline' },
   { label: 'Payment Methods', icon: 'card-outline' },
@@ -15,6 +16,8 @@ const MENU = [
 
 export default function AccountScreen() {
   const router = useRouter();
+  const { orders } = useCart();
+  const [showOrders, setShowOrders] = useState(false);
 
   return (
     <ScrollView style={s.container}>
@@ -31,6 +34,36 @@ export default function AccountScreen() {
           <Text style={s.email}>Mshuvo97@gmail.com</Text>
         </View>
       </View>
+
+      {/* Orders — accordion */}
+      <TouchableOpacity style={s.menuItem} onPress={() => setShowOrders(p => !p)}>
+        <Ionicons name="receipt-outline" size={20} color="#1a1a1a" style={{ marginRight: 16 }} />
+        <Text style={s.menuLabel}>Orders</Text>
+        <Ionicons name={showOrders ? 'chevron-down' : 'chevron-forward'} size={18} color="#aaa" style={{ marginLeft: 'auto' }} />
+      </TouchableOpacity>
+
+      {showOrders && (
+        <View style={s.orderList}>
+          {orders.length === 0 ? (
+            <Text style={s.emptyText}>Chưa có đơn hàng nào 🛒</Text>
+          ) : (
+            orders.map(order => (
+              <View key={order.id} style={s.orderCard}>
+                <View style={s.orderHeader}>
+                  <Text style={s.orderId}>#{order.id.slice(-5)}</Text>
+                  <Text style={s.orderDate}>{order.date}</Text>
+                  <Text style={s.orderTotal}>${order.total.toFixed(2)}</Text>
+                </View>
+                {order.items.map(item => (
+                  <Text key={item.id} style={s.orderItem}>
+                    {item.icon} {item.name} × {item.qty}
+                  </Text>
+                ))}
+              </View>
+            ))
+          )}
+        </View>
+      )}
 
       {/* Menu */}
       {MENU.map(item => (
@@ -64,4 +97,12 @@ const s = StyleSheet.create({
   menuLabel: { fontSize: 15, color: '#1a1a1a' },
   logout: { flexDirection: 'row', alignItems: 'center', paddingVertical: 20, marginTop: 8 },
   logoutText: { fontSize: 15, color: '#f44336', fontWeight: '600' },
+  orderList: { backgroundColor: '#fafafa', borderRadius: 12, padding: 12, marginBottom: 4 },
+  emptyText: { fontSize: 13, color: '#aaa', textAlign: 'center', paddingVertical: 8 },
+  orderCard: { backgroundColor: '#fff', borderRadius: 10, padding: 12, marginBottom: 8, borderWidth: 1, borderColor: '#f0f0f0' },
+  orderHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
+  orderId: { fontSize: 12, fontWeight: '700', color: '#1a1a1a' },
+  orderDate: { fontSize: 12, color: '#aaa' },
+  orderTotal: { fontSize: 12, fontWeight: '700', color: '#4CAF6F' },
+  orderItem: { fontSize: 13, color: '#555', paddingVertical: 2 },
 });

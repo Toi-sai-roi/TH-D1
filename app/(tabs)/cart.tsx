@@ -53,7 +53,7 @@ const s = StyleSheet.create({
   item: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderColor: '#f5f5f5' },
   img: { width: 60, height: 60, marginRight: 12 },
   info: { flex: 1 },
-  name: { fontSize: 14, fontWeight: '600', color: '#1a1a1a' },
+  name: { fontSize: 14, fontWeight: '600', color: '#1a1a1a', height: 20 },
   weight: { fontSize: 12, color: '#aaa', marginBottom: 8 },
   qtyRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   qtyBtn: { width: 28, height: 28, borderRadius: 8, borderWidth: 1, borderColor: '#ddd', justifyContent: 'center', alignItems: 'center' },

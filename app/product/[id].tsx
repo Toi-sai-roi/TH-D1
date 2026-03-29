@@ -22,8 +22,8 @@ export default function ProductDetailScreen() {
           <Ionicons name="chevron-back" size={24} color="#1a1a1a" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => toggleFav({ id, name: product.name, weight: product.weight, price: product.price, icon: product.icon })}>
-  <Ionicons name={isFav(id) ? 'heart' : 'heart-outline'} size={24} color={isFav(id) ? '#f44336' : '#1a1a1a'} />
-</TouchableOpacity>
+          <Ionicons name={isFav(id) ? 'heart' : 'heart-outline'} size={24} color={isFav(id) ? '#f44336' : '#1a1a1a'} />
+        </TouchableOpacity>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -72,7 +72,7 @@ export default function ProductDetailScreen() {
       </ScrollView>
 
       <View style={s.footer}>
-        <TouchableOpacity style={s.addBtn} onPress={() => { addItem({ ...product, id, img: null }); router.push('/(tabs)/cart'); }}>
+        <TouchableOpacity style={s.addBtn} onPress={() => { addItem({ ...product, id, img: null }, qty); router.push('/(tabs)/cart');}}>
           <Text style={s.addBtnText}>Add To Basket</Text>
         </TouchableOpacity>
       </View>

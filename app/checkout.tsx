@@ -8,11 +8,18 @@ export default function CheckoutScreen() {
   const router = useRouter();
   const [delivery, setDelivery] = useState('');
   const [payment, setPayment] = useState('card');
-  const { total } = useCart();
+  const { total, items } = useCart(); 
+
+  const handlePlaceOrder = () => {
+    if (items.length === 0) {
+      router.replace('../order-failed'); 
+    } else {
+      router.replace('../order-success');
+    }
+  };
 
   return (
     <View style={s.container}>
-      {/* Header */}
       <View style={s.header}>
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={24} color="#1a1a1a" />
@@ -22,7 +29,6 @@ export default function CheckoutScreen() {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Checkout box */}
         <View style={s.box}>
           <View style={s.boxHeader}>
             <Text style={s.boxTitle}>Checkout</Text>
@@ -46,10 +52,7 @@ export default function CheckoutScreen() {
       </ScrollView>
 
       <View style={s.footer}>
-        <TouchableOpacity
-          style={s.placeBtn}
-          onPress={() => router.replace('../order-success')}
-        >
+        <TouchableOpacity style={s.placeBtn} onPress={handlePlaceOrder}> 
           <Text style={s.placeBtnText}>Place Order</Text>
         </TouchableOpacity>
       </View>
