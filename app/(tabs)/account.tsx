@@ -38,7 +38,7 @@ export default function AccountScreen() {
       {/* Orders — accordion */}
       <TouchableOpacity style={s.menuItem} onPress={() => setShowOrders(p => !p)}>
         <Ionicons name="receipt-outline" size={20} color="#1a1a1a" style={{ marginRight: 16 }} />
-        <Text style={s.menuLabel}>Orders</Text>
+        <Text style={s.menuLabel}>Orders History</Text>
         <Ionicons name={showOrders ? 'chevron-down' : 'chevron-forward'} size={18} color="#aaa" style={{ marginLeft: 'auto' }} />
       </TouchableOpacity>
 
