@@ -1,7 +1,6 @@
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useCart } from '../../context/CartContext';
 
 const CATEGORY_PRODUCTS: Record<string, any[]> = {
   beverages: [
@@ -15,8 +14,8 @@ const CATEGORY_PRODUCTS: Record<string, any[]> = {
   fruits: [
     { id: 'f1', name: 'Red Apple', weight: '1kg', price: 1.99, icon: '🍎' },
     { id: 'f3', name: 'Organic Bananas', weight: '5kg', price: 3.00, icon: '🍌' },
-    { id: '1', name: 'Natural Red Apple', weight: '1kg', price: 4.99, icon: '🍎' },
-    { id: '2', name: 'Organic Bananas', weight: '7pcs', price: 4.99, icon: '🍌' },
+    { id: '1', name: 'Organic broccoli', weight: '1kg', price: 4.99, icon: '🥦' },
+    { id: '2', name: 'Crimson tomato', weight: '7pcs', price: 4.99, icon: '🍅' },
     { id: '5', name: 'Bell Pepper', weight: '1kg', price: 3.99, icon: '🫑' },
     { id: '6', name: 'Ginger', weight: '250g', price: 2.99, icon: '🫚' },
   ],
@@ -25,8 +24,8 @@ const CATEGORY_PRODUCTS: Record<string, any[]> = {
     { id: 'o2', name: 'Sunflower Oil', weight: '2L', price: 5.99, icon: '🌻' },
   ],
   meat: [
-    { id: 'm1', name: 'Beef Bone', weight: '1kg', price: 4.99, icon: '🥩' },
-    { id: 'm2', name: 'Broiler Chicken', weight: '1kg', price: 4.99, icon: '🍗' },
+    { id: 'm1', name: 'Beef Bone', weight: '1kg', price: 5.99, icon: '🥩' },
+    { id: 'm2', name: 'Broiler Chicken', weight: '1kg', price: 6.99, icon: '🍗' },
   ],
   bakery: [
     { id: 'bk1', name: 'White Bread', weight: '400g', price: 2.50, icon: '🍞' },

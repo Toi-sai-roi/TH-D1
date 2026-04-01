@@ -43,10 +43,10 @@ export default function SearchScreen() {
           <Text style={s.hint}>Start typing to search products...</Text>
         )}
         {query.length > 0 && results.length === 0 && (
-          <Text style={s.hint}>No results found for "{query}"</Text>
+          <Text style={s.hint}>{`No results found for "${query}"`}</Text>
         )}
         <View style={s.grid}>
-          {results.map(item => (
+          {results.map(item => (  
             <TouchableOpacity
               key={item.id}
               style={s.card}

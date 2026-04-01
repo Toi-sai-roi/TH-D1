@@ -1,11 +1,11 @@
-import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useCart } from '../../context/CartContext';
 
 const EXCLUSIVE = [
-  { id: '1', name: 'Natural Red Apple', weight: '1kg', price: 1.99, icon: '🍎' },
-  { id: '2', name: 'Organic Bananas', weight: '1kg', price: 2.99, icon: '🍌' },
+  { id: '1', name: 'Organic broccoli', weight: '1kg', price: 4.99, icon: '🥦' },
+  { id: '2', name: 'Crimson Tomato', weight: '1kg', price: 4.99, icon: '🍅' },
   { id: '3', name: 'Beef', weight: '1kg', price: 5.99, icon: '🥩' },
   { id: '4', name: 'Broiler Chicken', weight: '1kg', price: 6.99, icon: '🍗' },
 ];

@@ -12,7 +12,7 @@ export default function LoginScreen() {
 
   return (
     <View style={s.container}>
-      <Text style={s.title}>Loging</Text>
+      <Text style={s.title}>Login</Text>
       <Text style={s.sub}>Enter your emails and password</Text>
 
       <TextInput
@@ -50,7 +50,7 @@ export default function LoginScreen() {
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.push('/(auth)/sign-up')}>
-        <Text style={s.signupLink}>Don't have an account? <Text style={s.signupBold}>Singup</Text></Text>
+        <Text style={s.signupLink}>Don`t have an account? <Text style={s.signupBold}>Sign up</Text></Text>
       </TouchableOpacity>
     </View>
   );

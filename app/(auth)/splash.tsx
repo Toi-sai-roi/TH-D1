@@ -10,7 +10,7 @@ export default function SplashScreen() {
       router.replace('/(auth)/onboarding');
     }, 3000);
     return () => clearTimeout(t);
-  }, []);
+  },  []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <View style={s.container}>

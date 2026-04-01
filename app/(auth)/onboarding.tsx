@@ -1,42 +1,42 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ImageBackground, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function OnboardingScreen() {
   const router = useRouter();
 
   return (
-    <View style={s.container}>
-      <Image source={require('../../assets/scr-sh/onboarding.png')} style={s.bg} resizeMode="cover" />
+    <ImageBackground
+      source={require('../../assets/scr-sh/onboarding.png')}
+      style={s.bg}
+      resizeMode="cover"
+    >
+      
+      <View style={s.overlay} />
       <View style={s.content}>
-        <Text style={s.title}>Welcome{'\n'}to our store</Text>
-        <Text style={s.sub}>Get your groceries in as fast as one hour.</Text>
+        <Text style={s.icon}>🥕</Text>
+        <Text style={s.title}>Welcome {'\n'} to our store</Text>
+        <Text style={s.sub}>Get your groceries in as fast as one hour</Text>
         <TouchableOpacity style={s.btn} onPress={() => router.replace('/(auth)/sign-in')}>
           <Text style={s.btnText}>Get Started</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ImageBackground>
   );
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  bg: { width: '100%', height: '60%' },
+  bg: { flex: 1 },
+  overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.15)' },
+  icon: { fontSize: 55, textAlign: 'center'},
   content: {
     flex: 1,
+    justifyContent: 'flex-end',
     paddingHorizontal: 24,
-    paddingTop: 24,
-    gap: 12,
+    paddingBottom: 120,
+    gap: 8,
   },
-  title: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#1a1a1a',
-  },
-  sub: {
-    fontSize: 15,
-    color: '#888',
-    lineHeight: 22,
-  },
+  title: { fontSize: 40, fontWeight: '400', color: '#fff', textAlign: 'center' },
+  sub: { fontSize: 12, color: 'rgba(255,255,255,0.85)', textAlign: 'center' },
   btn: {
     marginTop: 16,
     backgroundColor: '#4CAF6F',
@@ -44,9 +44,5 @@ const s = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
   },
-  btnText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 16,
-  },
+  btnText: { color: '#fff', fontWeight: '600', fontSize: 20 },
 });

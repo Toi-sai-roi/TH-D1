@@ -5,13 +5,13 @@ import { useState } from 'react';
 import { useCart } from '../../context/CartContext';
 
 const MENU = [
-  { label: 'My Details', icon: 'person-outline' },
-  { label: 'Delivery Address', icon: 'location-outline' },
-  { label: 'Payment Methods', icon: 'card-outline' },
-  { label: 'Promo Card', icon: 'pricetag-outline' },
-  { label: 'Notifications', icon: 'notifications-outline' },
-  { label: 'Help', icon: 'help-circle-outline' },
-  { label: 'About', icon: 'information-circle-outline' },
+  { label: 'Favourites', icon: 'heart-outline', route: '/favourites' },
+  { label: 'My Details', icon: 'person-outline', route: null },
+  { label: 'Delivery Address', icon: 'location-outline', route: null },
+  { label: 'Payment Methods', icon: 'card-outline', route: null },
+  { label: 'Promo Card', icon: 'pricetag-outline', route: null },
+  { label: 'Help', icon: 'help-circle-outline', route: null },
+  { label: 'About', icon: 'information-circle-outline', route: null },
 ];
 
 export default function AccountScreen() {
@@ -35,7 +35,7 @@ export default function AccountScreen() {
         </View>
       </View>
 
-      {/* Orders — accordion */}
+      {/* Orders accordion */}
       <TouchableOpacity style={s.menuItem} onPress={() => setShowOrders(p => !p)}>
         <Ionicons name="receipt-outline" size={20} color="#1a1a1a" style={{ marginRight: 16 }} />
         <Text style={s.menuLabel}>Orders History</Text>
@@ -67,7 +67,11 @@ export default function AccountScreen() {
 
       {/* Menu */}
       {MENU.map(item => (
-        <TouchableOpacity key={item.label} style={s.menuItem}>
+        <TouchableOpacity
+          key={item.label}
+          style={s.menuItem}
+          onPress={() => item.route && router.push(item.route as any)}
+        >
           <Ionicons name={item.icon as any} size={20} color="#1a1a1a" style={{ marginRight: 16 }} />
           <Text style={s.menuLabel}>{item.label}</Text>
           <Ionicons name="chevron-forward" size={18} color="#aaa" style={{ marginLeft: 'auto' }} />

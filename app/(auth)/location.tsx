@@ -12,7 +12,7 @@ export default function LocationScreen() {
       <Image source={require("../../assets/scr-sh/location.png")} style={s.img} resizeMode="contain" />
 
       <Text style={s.title}>Select Your Location</Text>
-      <Text style={s.sub}>Switch on your location to stay in tune with what's happening in your area.</Text>
+      <Text style={s.sub}>Switch on your location to stay in tune with what`s happening in your area.</Text>
 
       <Text style={s.label}>Your Zone</Text>
       <TextInput style={s.input} placeholder="e.g. Banasee" value={zone} onChangeText={setZone} />

@@ -44,10 +44,10 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="favourites"
+        name="notifications"
         options={{
-          title: 'Favourite',
-          tabBarIcon: ({ color, size }) => <TabIcon name="heart-outline" color={color} size={size} />,
+          title: 'Notifications',
+          tabBarIcon: ({ color, size }) => <TabIcon name="notifications-outline" color={color} size={size} />,
         }}
       />
       <Tabs.Screen
@@ -57,6 +57,7 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, size }) => <TabIcon name="person-outline" color={color} size={size} />,
         }}
       />
+      <Tabs.Screen name="favourites" options={{ href: null }} />
     </Tabs>
   );
 }

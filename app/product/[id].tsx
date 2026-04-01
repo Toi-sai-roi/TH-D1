@@ -9,7 +9,6 @@ export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const [qty, setQty] = useState(1);
-  const [liked, setLiked] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
   const { addItem, toggleFav, isFav } = useCart();
 

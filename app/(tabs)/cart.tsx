@@ -1,57 +1,87 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useCart } from '../../context/CartContext';
 
 export default function CartScreen() {
   const router = useRouter();
-  const { items, updateQty, total } = useCart();
+  const { items, updateQty, total, clearCart } = useCart();
+
+  const handleClearCart = () => {
+    Alert.alert(
+      'Xoá giỏ hàng',
+      'Bạn có chắc muốn xoá tất cả sản phẩm?',
+      [
+        { text: 'Huỷ', style: 'cancel' },
+        { text: 'Xoá hết', style: 'destructive', onPress: clearCart },
+      ]
+    );
+  };
 
   return (
     <View style={s.container}>
-      <Text style={s.title}>My Cart</Text>
+      <View style={s.header}>
+        <Text style={s.title}>My Cart</Text>
+        {items.length > 0 && (
+          <TouchableOpacity onPress={handleClearCart}>
+            <Ionicons name="trash-outline" size={22} color="#f44336" />
+          </TouchableOpacity>
+        )}
+      </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        {items.map(item => (
-          <View key={item.id} style={s.item}>
-            <Text style={{ fontSize: 48, marginRight: 12 }}>{item.icon}</Text>
-            <View style={s.info}>
-              <Text style={s.name}>{item.name}</Text>
-              <Text style={s.weight}>{item.weight}</Text>
-              <View style={s.qtyRow}>
-                <TouchableOpacity style={s.qtyBtn} onPress={() => updateQty(item.id, -1)}>
-                  <Text style={s.qtyBtnText}>−</Text>
-                </TouchableOpacity>
-                <Text style={s.qty}>{item.qty}</Text>
-                <TouchableOpacity style={s.qtyBtn} onPress={() => updateQty(item.id, 1)}>
-                  <Text style={s.qtyBtnText}>+</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            <Text style={s.price}>${(item.price * item.qty).toFixed(2)}</Text>
-            <TouchableOpacity onPress={() => updateQty(item.id, -item.qty)} style={s.removeBtn}>
-              <Ionicons name="close" size={18} color="#aaa" />
-            </TouchableOpacity>
+        {items.length === 0 ? (
+          <View style={s.empty}>
+            <Text style={s.emptyIcon}>🛒</Text>
+            <Text style={s.emptyText}>Giỏ hàng trống rồi!</Text>
           </View>
-        ))}
+        ) : (
+          items.map(item => (
+            <View key={item.id} style={s.item}>
+              <Text style={{ fontSize: 48, marginRight: 12 }}>{item.icon}</Text>
+              <View style={s.info}>
+                <Text style={s.name}>{item.name}</Text>
+                <Text style={s.weight}>{item.weight}</Text>
+                <View style={s.qtyRow}>
+                  <TouchableOpacity style={s.qtyBtn} onPress={() => updateQty(item.id, -1)}>
+                    <Text style={s.qtyBtnText}>−</Text>
+                  </TouchableOpacity>
+                  <Text style={s.qty}>{item.qty}</Text>
+                  <TouchableOpacity style={s.qtyBtn} onPress={() => updateQty(item.id, 1)}>
+                    <Text style={s.qtyBtnText}>+</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <Text style={s.price}>${(item.price * item.qty).toFixed(2)}</Text>
+              <TouchableOpacity onPress={() => updateQty(item.id, -item.qty)} style={s.removeBtn}>
+                <Ionicons name="close" size={18} color="#aaa" />
+              </TouchableOpacity>
+            </View>
+          ))
+        )}
         <View style={{ height: 100 }} />
       </ScrollView>
 
-      <View style={s.footer}>
-        <TouchableOpacity style={s.checkoutBtn} onPress={() => router.push('../checkout')}>
-          <Text style={s.checkoutText}>Go to Checkout</Text>
-          <Text style={s.checkoutPrice}>${total.toFixed(2)}</Text>
-        </TouchableOpacity>
-      </View>
+      {items.length > 0 && (
+        <View style={s.footer}>
+          <TouchableOpacity style={s.checkoutBtn} onPress={() => router.push('../checkout')}>
+            <Text style={s.checkoutText}>Go to Checkout</Text>
+            <Text style={s.checkoutPrice}>${total.toFixed(2)}</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', paddingHorizontal: 16, paddingTop: 52 },
-  title: { fontSize: 22, fontWeight: '700', color: '#1a1a1a', marginBottom: 20 },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 },
+  title: { fontSize: 22, fontWeight: '700', color: '#1a1a1a' },
+  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 120 },
+  emptyIcon: { fontSize: 64, marginBottom: 16 },
+  emptyText: { fontSize: 16, color: '#aaa', fontWeight: '500' },
   item: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderColor: '#f5f5f5' },
-  img: { width: 60, height: 60, marginRight: 12 },
   info: { flex: 1 },
   name: { fontSize: 14, fontWeight: '600', color: '#1a1a1a', height: 20 },
   weight: { fontSize: 12, color: '#aaa', marginBottom: 8 },

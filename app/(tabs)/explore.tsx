@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useCart } from '../../context/CartContext';
 import { ALL_PRODUCTS } from '../../constants/products';
-import React from 'react';
 
 const CATEGORIES = [
   { id: 'fruits', name: 'Fresh Fruits & Vegetable', bg: '#E8F5E9', icon: '🥦' },
@@ -14,8 +13,6 @@ const CATEGORIES = [
   { id: 'dairy', name: 'Dairy & Eggs', bg: '#E3F2FD', icon: '🥚' },
   { id: 'beverages', name: 'Beverages', bg: '#F3E5F5', icon: '🧃' },
 ];
-
-
 
 export default function ExploreScreen() {
   const router = useRouter();
@@ -64,7 +61,9 @@ export default function ExploreScreen() {
           </View>
         ) : (
           <>
-            {results.length === 0 && <Text style={s.hint}>No results found for "{query}"</Text>}
+            {results.length === 0 && (
+              <Text style={s.hint}>{`No results found for "${query}"`}</Text>
+            )}
             <View style={s.grid}>
               {results.map(item => (
                 <TouchableOpacity

@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type CartItem = {
   id: string;
@@ -40,12 +41,37 @@ type CartContextType = {
   placeOrder: () => void;
 };
 
+const KEYS = { items: 'cart_items', favs: 'cart_favs', orders: 'cart_orders' };
+
 const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [favs, setFavs] = useState<FavItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+
+  // Load từ AsyncStorage khi app mở
+  useEffect(() => {
+    (async () => {
+      try {
+        const [i, f, o] = await Promise.all([
+          AsyncStorage.getItem(KEYS.items),
+          AsyncStorage.getItem(KEYS.favs),
+          AsyncStorage.getItem(KEYS.orders),
+        ]);
+        if (i) setItems(JSON.parse(i));
+        if (f) setFavs(JSON.parse(f));
+        if (o) setOrders(JSON.parse(o));
+      } catch (e) {
+        console.warn('AsyncStorage load error:', e);
+      }
+    })();
+  }, []);
+
+  // Save mỗi khi thay đổi
+  useEffect(() => { AsyncStorage.setItem(KEYS.items, JSON.stringify(items)); }, [items]);
+  useEffect(() => { AsyncStorage.setItem(KEYS.favs, JSON.stringify(favs)); }, [favs]);
+  useEffect(() => { AsyncStorage.setItem(KEYS.orders, JSON.stringify(orders)); }, [orders]);
 
   const addItem = (item: Omit<CartItem, 'qty'>, qty: number = 1) => {
     setItems(prev => {

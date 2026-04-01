@@ -11,11 +11,9 @@ export default function CheckoutScreen() {
   const { total, items } = useCart(); 
 
   const handlePlaceOrder = () => {
-    if (items.length === 0) {
-      router.replace('../order-failed'); 
-    } else {
-      router.replace('../order-success');
-    }
+    if (items.length === 0) return;
+    const success = Math.random() > 0.2; // 80% success, 20% fail
+    router.replace(success ? '../order-success' : '../order-failed');
   };
 
   return (

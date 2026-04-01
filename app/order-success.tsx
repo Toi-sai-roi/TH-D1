@@ -10,7 +10,7 @@ export default function OrderSuccessScreen() {
 
   useEffect(() => {
     placeOrder(); // lưu order + clear cart ngay khi vào màn này
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps  
 
   return (
     <View style={s.container}>
