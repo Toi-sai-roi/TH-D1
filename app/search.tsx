@@ -12,17 +12,51 @@ import {
 import { ALL_PRODUCTS } from "../constants/products";
 import { useCart } from "../context/CartContext";
 
+type SortOption = "default" | "asc" | "desc";
+
 export default function SearchScreen() {
   const router = useRouter();
-  const { addItem } = useCart();
+  const { addItem, filter } = useCart();
   const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<SortOption>("default");
 
-  const results =
-    query.length > 0
-      ? ALL_PRODUCTS.filter((p) =>
-          p.name.toLowerCase().includes(query.toLowerCase()),
-        )
-      : [];
+  const { cats: selCats, brands: selBrands } = filter;
+  const hasFilter = selCats.length > 0 || selBrands.length > 0;
+
+  const cycleSort = () => {
+    setSort((s) =>
+      s === "default" ? "asc" : s === "asc" ? "desc" : "default",
+    );
+  };
+
+  const sortIcon =
+    sort === "asc"
+      ? "arrow-up"
+      : sort === "desc"
+        ? "arrow-down"
+        : "swap-vertical";
+  const sortLabel =
+    sort === "asc"
+      ? "Giá tăng dần"
+      : sort === "desc"
+        ? "Giá giảm dần"
+        : "Mặc định";
+
+  const results = ALL_PRODUCTS.filter((p) => {
+    const matchQuery =
+      query.length === 0 || p.name.toLowerCase().includes(query.toLowerCase());
+    const matchCat = selCats.length === 0 || selCats.includes(p.category);
+    const matchBrand = selBrands.length === 0 || selBrands.includes(p.brand);
+    return matchQuery && matchCat && matchBrand;
+  }).sort((a, b) =>
+    sort === "asc"
+      ? a.price - b.price
+      : sort === "desc"
+        ? b.price - a.price
+        : 0,
+  );
+
+  const showResults = query.length > 0 || hasFilter;
 
   return (
     <View style={s.container}>
@@ -44,19 +78,52 @@ export default function SearchScreen() {
           )}
         </View>
         <TouchableOpacity onPress={() => router.push("../filters")}>
-          <Ionicons name="options-outline" size={24} color="#1a1a1a" />
+          <View>
+            <Ionicons
+              name="options-outline"
+              size={24}
+              color={hasFilter ? "#4CAF6F" : "#1a1a1a"}
+            />
+            {hasFilter && <View style={s.filterDot} />}
+          </View>
         </TouchableOpacity>
       </View>
 
+      <TouchableOpacity style={s.sortBtn} onPress={cycleSort}>
+        <Ionicons
+          name={sortIcon as any}
+          size={16}
+          color={sort !== "default" ? "#4CAF6F" : "#888"}
+        />
+        <Text style={[s.sortLabel, sort !== "default" && { color: "#4CAF6F" }]}>
+          {sortLabel}
+        </Text>
+      </TouchableOpacity>
+
+      {hasFilter && (
+        <View style={s.filterTags}>
+          {selCats.map((c) => (
+            <View key={c} style={s.tag}>
+              <Text style={s.tagText}>{c}</Text>
+            </View>
+          ))}
+          {selBrands.map((b) => (
+            <View key={b} style={s.tag}>
+              <Text style={s.tagText}>{b}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+
       <ScrollView showsVerticalScrollIndicator={false}>
-        {query.length === 0 && (
+        {!showResults && (
           <Text style={s.hint}>Start typing to search products...</Text>
         )}
-        {query.length > 0 && results.length === 0 && (
+        {showResults && results.length === 0 && (
           <Text style={s.hint}>{`No results found for "${query}"`}</Text>
         )}
         <View style={s.grid}>
-          {results.map((item) => (
+          {(showResults ? results : []).map((item) => (
             <TouchableOpacity
               key={item.id}
               style={s.card}
@@ -99,7 +166,7 @@ const s = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    marginBottom: 20,
+    marginBottom: 12,
   },
   searchBox: {
     flex: 1,
@@ -112,6 +179,37 @@ const s = StyleSheet.create({
     gap: 8,
   },
   input: { flex: 1, fontSize: 14, color: "#1a1a1a" },
+  filterDot: {
+    position: "absolute",
+    top: -2,
+    right: -2,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#f44336",
+  },
+  sortBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    alignSelf: "flex-end",
+    marginBottom: 12,
+    paddingHorizontal: 4,
+  },
+  sortLabel: { fontSize: 13, color: "#888", fontWeight: "500" },
+  filterTags: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: 12,
+  },
+  tag: {
+    backgroundColor: "#e8f5e9",
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  tagText: { fontSize: 12, color: "#4CAF6F", fontWeight: "600" },
   hint: { textAlign: "center", color: "#aaa", marginTop: 40, fontSize: 14 },
   grid: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
   card: {

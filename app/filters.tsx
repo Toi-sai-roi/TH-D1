@@ -8,14 +8,36 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useCart } from "../context/CartContext";
 
-const CATEGORIES = ["Eggs", "Noodles & Pasta", "Chips & Crisps", "Fast Food"];
+const CATEGORIES = [
+  "fruits",
+  "meat",
+  "dairy",
+  "beverages",
+  "bakery",
+  "oil",
+  "pulses",
+  "rice",
+];
+const CATEGORY_LABELS: Record<string, string> = {
+  fruits: "Fresh Fruits & Vegetable",
+  meat: "Meat & Fish",
+  dairy: "Dairy & Eggs",
+  beverages: "Beverages",
+  bakery: "Bakery & Snacks",
+  oil: "Cooking Oil & Ghee",
+  pulses: "Pulses",
+  rice: "Rice",
+};
 const BRANDS = ["Individual Collection", "Cocola", "Ifad", "Kazi Farmas"];
 
 export default function FiltersScreen() {
   const router = useRouter();
-  const [selCats, setSelCats] = useState<string[]>(["Eggs"]);
-  const [selBrands, setSelBrands] = useState<string[]>(["Cocola"]);
+  const { filter, setFilter } = useCart();
+
+  const [selCats, setSelCats] = useState<string[]>(filter.cats);
+  const [selBrands, setSelBrands] = useState<string[]>(filter.brands);
 
   const toggle = (
     list: string[],
@@ -27,19 +49,29 @@ export default function FiltersScreen() {
     );
   };
 
+  const apply = () => {
+    setFilter({ cats: selCats, brands: selBrands });
+    router.back();
+  };
+
+  const reset = () => {
+    setSelCats([]);
+    setSelBrands([]);
+  };
+
   return (
     <View style={s.container}>
-      {/* Header */}
       <View style={s.header}>
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="close" size={24} color="#1a1a1a" />
         </TouchableOpacity>
         <Text style={s.title}>Filters</Text>
-        <View style={{ width: 24 }} />
+        <TouchableOpacity onPress={reset}>
+          <Text style={s.reset}>Reset</Text>
+        </TouchableOpacity>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Categories */}
         <Text style={s.sectionTitle}>Categories</Text>
         {CATEGORIES.map((cat) => (
           <TouchableOpacity
@@ -52,11 +84,10 @@ export default function FiltersScreen() {
                 <Ionicons name="checkmark" size={14} color="#fff" />
               )}
             </View>
-            <Text style={s.rowLabel}>{cat}</Text>
+            <Text style={s.rowLabel}>{CATEGORY_LABELS[cat]}</Text>
           </TouchableOpacity>
         ))}
 
-        {/* Brands */}
         <Text style={[s.sectionTitle, { marginTop: 24 }]}>Brand</Text>
         {BRANDS.map((brand) => (
           <TouchableOpacity
@@ -74,8 +105,13 @@ export default function FiltersScreen() {
         ))}
       </ScrollView>
 
-      <TouchableOpacity style={s.applyBtn} onPress={() => router.back()}>
-        <Text style={s.applyText}>Apply Filter</Text>
+      <TouchableOpacity style={s.applyBtn} onPress={apply}>
+        <Text style={s.applyText}>
+          Apply Filter
+          {selCats.length + selBrands.length > 0
+            ? ` (${selCats.length + selBrands.length})`
+            : ""}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -95,6 +131,7 @@ const s = StyleSheet.create({
     marginBottom: 24,
   },
   title: { fontSize: 18, fontWeight: "700", color: "#1a1a1a" },
+  reset: { fontSize: 13, color: "#f44336", fontWeight: "600" },
   sectionTitle: {
     fontSize: 16,
     fontWeight: "700",
