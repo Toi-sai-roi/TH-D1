@@ -6,7 +6,11 @@ Lê Văn Tùng -23810310325
 - Không thay đổi quá nhiều...
 - Sử dụng AsyncStorage để lưu giỏ hàng, danh sách yêu thích và lịch sử đơn hàng trên máy, thoát app vẫn giữ nguyên dữ liệu.
 
-![text](assets/scr-sh/Eplore_scr.png) ![text](assets/scr-sh/Favourties_scr.png) ![text](assets/scr-sh/Filters_scr.png) ![text](assets/scr-sh/MyCart_scr.png) ![text](assets/scr-sh/Search_scr.png)
+![alt text](assets/scr-sh/Search_scr.png)
+![alt text](assets/scr-sh/Explore_scr.png)
+![alt text](assets/scr-sh/Cart_scr.png)
+![alt text](assets/scr-sh/Filters_scr.png)
+![alt text](assets/scr-sh/Favouriters_scr.png)
 
 1 - 4 - 2026
 
