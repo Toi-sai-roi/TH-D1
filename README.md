@@ -3,14 +3,10 @@ Lê Văn Tùng -23810310325
 6 - 4 - 2026
 
 - Em dùng constants/products.ts (làm từ lâu, thay thì sẽ phải mò lại các file khác liên quan nên sẽ rất lâu) thay cho data.js, cấu trúc JSON giống nhau, logic tìm kiếm JS đầy đủ.
-- Nothing change...
+- Không thay đổi quá nhiều...
 - Sử dụng AsyncStorage để lưu giỏ hàng, danh sách yêu thích và lịch sử đơn hàng trên máy, thoát app vẫn giữ nguyên dữ liệu.
-- Picture:
-  ![text](assets/scr-sh/Eplore_scr.png)
-  ![text](assets/scr-sh/Favourties_scr.png)
-  ![text](assets/scr-sh/Filters_scr.png)
-  ![text](assets/scr-sh/MyCart_scr.png)
-  ![text](assets/scr-sh/Search_scr.png)
+
+![text](assets/scr-sh/Eplore_scr.png) ![text](assets/scr-sh/Favourties_scr.png) ![text](assets/scr-sh/Filters_scr.png) ![text](assets/scr-sh/MyCart_scr.png) ![text](assets/scr-sh/Search_scr.png)
 
 1 - 4 - 2026
 
