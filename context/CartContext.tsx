@@ -1,5 +1,11 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 export type CartItem = {
   id: string;
@@ -28,7 +34,7 @@ export type Order = {
 
 type CartContextType = {
   items: CartItem[];
-  addItem: (item: Omit<CartItem, 'qty'>, qty?: number) => void;
+  addItem: (item: Omit<CartItem, "qty">, qty?: number) => void;
   removeItem: (id: string) => void;
   updateQty: (id: string, delta: number) => void;
   clearCart: () => void;
@@ -41,7 +47,7 @@ type CartContextType = {
   placeOrder: () => void;
 };
 
-const KEYS = { items: 'cart_items', favs: 'cart_favs', orders: 'cart_orders' };
+const KEYS = { items: "cart_items", favs: "cart_favs", orders: "cart_orders" };
 
 const CartContext = createContext<CartContextType | null>(null);
 
@@ -49,6 +55,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [favs, setFavs] = useState<FavItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false); // thêm trạng thái để đảm bảo chỉ save khi đã load xong data từ AsyncStorage
 
   // Load từ AsyncStorage khi app mở
   useEffect(() => {
@@ -63,30 +70,43 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (f) setFavs(JSON.parse(f));
         if (o) setOrders(JSON.parse(o));
       } catch (e) {
-        console.warn('AsyncStorage load error:', e);
+        console.warn("AsyncStorage load error:", e);
+      } finally {
+        setIsLoaded(true); // đánh dấu đã load xong data, từ đó mới cho phép lưu khi có thay đổi items/favs/orders
       }
     })();
   }, []);
 
-  // Save mỗi khi thay đổi
-  useEffect(() => { AsyncStorage.setItem(KEYS.items, JSON.stringify(items)); }, [items]);
-  useEffect(() => { AsyncStorage.setItem(KEYS.favs, JSON.stringify(favs)); }, [favs]);
-  useEffect(() => { AsyncStorage.setItem(KEYS.orders, JSON.stringify(orders)); }, [orders]);
+  useEffect(() => {
+    // chỉ lưu favs khi đã load xong data, tránh trường hợp ghi đè data mới lên data cũ chưa load xong từ AsyncStorage
+    if (isLoaded) AsyncStorage.setItem(KEYS.items, JSON.stringify(items));
+  }, [items, isLoaded]);
+  useEffect(() => {
+    if (isLoaded) AsyncStorage.setItem(KEYS.favs, JSON.stringify(favs));
+  }, [favs, isLoaded]);
+  useEffect(() => {
+    if (isLoaded) AsyncStorage.setItem(KEYS.orders, JSON.stringify(orders));
+  }, [orders, isLoaded]); // chỉ lưu favs khi đã load xong data, tránh trường hợp ghi đè data mới lên data cũ chưa load xong từ AsyncStorage
 
-  const addItem = (item: Omit<CartItem, 'qty'>, qty: number = 1) => {
-    setItems(prev => {
-      const exists = prev.find(i => i.id === item.id);
-      if (exists) return prev.map(i => i.id === item.id ? { ...i, qty: i.qty + qty } : i);
+  const addItem = (item: Omit<CartItem, "qty">, qty: number = 1) => {
+    setItems((prev) => {
+      const exists = prev.find((i) => i.id === item.id);
+      if (exists)
+        return prev.map((i) =>
+          i.id === item.id ? { ...i, qty: i.qty + qty } : i,
+        );
       return [...prev, { ...item, qty }];
     });
   };
 
-  const removeItem = (id: string) => setItems(prev => prev.filter(i => i.id !== id));
+  const removeItem = (id: string) =>
+    setItems((prev) => prev.filter((i) => i.id !== id));
 
   const updateQty = (id: string, delta: number) => {
-    setItems(prev => prev
-      .map(i => i.id === id ? { ...i, qty: i.qty + delta } : i)
-      .filter(i => i.qty > 0)
+    setItems((prev) =>
+      prev
+        .map((i) => (i.id === id ? { ...i, qty: i.qty + delta } : i))
+        .filter((i) => i.qty > 0),
     );
   };
 
@@ -96,28 +116,44 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (items.length === 0) return;
     const order: Order = {
       id: Date.now().toString(),
-      date: new Date().toLocaleDateString('vi-VN'),
+      date: new Date().toLocaleDateString("vi-VN"),
       items: [...items],
       total: items.reduce((sum, i) => sum + i.price * i.qty, 0),
     };
-    setOrders(prev => [order, ...prev]);
+    setOrders((prev) => [order, ...prev]);
     clearCart();
   };
 
   const toggleFav = (item: FavItem) => {
-    setFavs(prev => prev.find(f => f.id === item.id)
-      ? prev.filter(f => f.id !== item.id)
-      : [...prev, item]
+    setFavs((prev) =>
+      prev.find((f) => f.id === item.id)
+        ? prev.filter((f) => f.id !== item.id)
+        : [...prev, item],
     );
   };
 
-  const isFav = (id: string) => favs.some(f => f.id === id);
+  const isFav = (id: string) => favs.some((f) => f.id === id);
 
   const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
   const count = items.reduce((sum, i) => sum + i.qty, 0);
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateQty, clearCart, total, count, favs, toggleFav, isFav, orders, placeOrder }}>
+    <CartContext.Provider
+      value={{
+        items,
+        addItem,
+        removeItem,
+        updateQty,
+        clearCart,
+        total,
+        count,
+        favs,
+        toggleFav,
+        isFav,
+        orders,
+        placeOrder,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
@@ -125,6 +161,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 export function useCart() {
   const ctx = useContext(CartContext);
-  if (!ctx) throw new Error('useCart must be used within CartProvider');
+  if (!ctx) throw new Error("useCart must be used within CartProvider");
   return ctx;
 }
