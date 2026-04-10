@@ -1,5 +1,14 @@
 Lê Văn Tùng - 23810310325
 
+10 - 4 - 2026
+- 4 screen
+ Ngoài ra:
+- thêm active cho nút 'see all'
+- sửa fail/succes hiện thị rõ trên history
+- thêm promo code, có trong checkout và cả account
+
+![alt text](assets/scr-sh/checkout.png) ![alt text](assets/scr-sh/failed.png) ![alt text](assets/scr-sh/success.png) ![alt text](assets/scr-sh/account.png)
+
 6 - 4 - 2026 (không biết làm gì)
 
 - Thêm badge số lượng trên icon cart và notifications ở tab bar

@@ -1,18 +1,21 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { useCart } from '../context/CartContext'; 
+import { useCart, PROMOS } from '../context/CartContext';
 
 export default function CheckoutScreen() {
   const router = useRouter();
   const [delivery, setDelivery] = useState('');
   const [payment, setPayment] = useState('card');
-  const { total, items } = useCart(); 
+  const [showPromos, setShowPromos] = useState(false);
+
+  const { total, items, appliedPromo, applyPromo, removePromo, discount, finalTotal, createOrder } = useCart();
 
   const handlePlaceOrder = () => {
     if (items.length === 0) return;
-    const success = Math.random() > 0.2; // 80% success, 20% fail
+    const success = Math.random() > 0.2;
+    createOrder(success ? 'success' : 'failed');
     router.replace(success ? '../order-success' : '../order-failed');
   };
 
@@ -37,9 +40,41 @@ export default function CheckoutScreen() {
 
           <Row label="Delivery" value={delivery || 'Select Method'} onPress={() => setDelivery('Standard')} arrow />
           <Row label="Payment" value={payment === 'card' ? '💳' : '💵'} onPress={() => setPayment(p => p === 'card' ? 'cash' : 'card')} arrow />
-          <Row label="Promo Code" value="Pick discount" onPress={() => {}} arrow />
-          <Row label="Total Cost" value={`$${total.toFixed(2)}`} /> 
+
+          {/* Promo Code row */}
+          <TouchableOpacity style={s.row} onPress={() => setShowPromos(true)}>
+            <Text style={s.rowLabel}>Promo Code</Text>
+            {appliedPromo ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Text style={{ color: '#4CAF6F', fontWeight: '600', fontSize: 13 }}>{appliedPromo.code}</Text>
+                <TouchableOpacity onPress={removePromo} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                  <Ionicons name="close-circle" size={16} color="#aaa" />
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <Text style={s.rowValue}>Pick discount</Text>
+            )}
+            <Ionicons name="chevron-forward" size={16} color="#aaa" style={{ marginLeft: 4 }} />
+          </TouchableOpacity>
+
+          {/* Discount row — chỉ hiện khi có promo */}
+          {appliedPromo && (
+            <View style={s.row}>
+              <Text style={[s.rowLabel, { color: '#4CAF6F' }]}>Discount ({appliedPromo.percent}%)</Text>
+              <Text style={{ color: '#4CAF6F', fontWeight: '700' }}>-${discount.toFixed(2)}</Text>
+            </View>
+          )}
+
+          <Row label="Total Cost" value={`$${finalTotal.toFixed(2)}`} />
         </View>
+
+        {/* You saved banner */}
+        {appliedPromo && (
+          <View style={s.savedBanner}>
+            <Ionicons name="checkmark-circle" size={16} color="#4CAF6F" />
+            <Text style={s.savedText}>You saved ${discount.toFixed(2)} 🎉</Text>
+          </View>
+        )}
 
         <Text style={s.terms}>
           By placing an order you agree to our{' '}
@@ -50,10 +85,44 @@ export default function CheckoutScreen() {
       </ScrollView>
 
       <View style={s.footer}>
-        <TouchableOpacity style={s.placeBtn} onPress={handlePlaceOrder}> 
+        <TouchableOpacity style={s.placeBtn} onPress={handlePlaceOrder}>
           <Text style={s.placeBtnText}>Place Order</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Promo picker modal */}
+      <Modal visible={showPromos} transparent animationType="slide">
+        <View style={s.overlay}>
+          <View style={s.promoSheet}>
+            <Text style={s.promoSheetTitle}>Choose Voucher</Text>
+            {PROMOS.map(p => {
+              const eligible = total >= p.minOrder;
+              const isApplied = appliedPromo?.code === p.code;
+              return (
+                <TouchableOpacity
+                  key={p.code}
+                  style={[s.promoRow, !eligible && { opacity: 0.4 }, isApplied && s.promoRowActive]}
+                  disabled={!eligible}
+                  onPress={() => { applyPromo(p.code); setShowPromos(false); }}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontWeight: '800', color: '#4CAF6F', fontSize: 16 }}>-{p.percent}%</Text>
+                    <Text style={{ fontSize: 13, color: '#1a1a1a', marginTop: 2 }}>{p.label}</Text>
+                    {p.minOrder > 0 && (
+                      <Text style={{ fontSize: 11, color: '#aaa', marginTop: 2 }}>Min. order ${p.minOrder}</Text>
+                    )}
+                    <Text style={{ fontSize: 11, color: '#bbb', marginTop: 4, fontFamily: 'monospace' }}>{p.code}</Text>
+                  </View>
+                  {isApplied && <Ionicons name="checkmark-circle" size={22} color="#4CAF6F" />}
+                </TouchableOpacity>
+              );
+            })}
+            <TouchableOpacity style={s.closeSheet} onPress={() => setShowPromos(false)}>
+              <Text style={{ color: '#aaa', fontWeight: '600', fontSize: 15 }}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -83,4 +152,12 @@ const s = StyleSheet.create({
   footer: { position: 'absolute', bottom: 32, left: 16, right: 16 },
   placeBtn: { backgroundColor: '#4CAF6F', borderRadius: 16, paddingVertical: 16, alignItems: 'center' },
   placeBtnText: { color: '#fff', fontWeight: '600', fontSize: 16 },
+  savedBanner: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#f0faf4', borderRadius: 10, padding: 10, marginBottom: 16 },
+  savedText: { fontSize: 13, color: '#4CAF6F', fontWeight: '600' },
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
+  promoSheet: { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, gap: 10 },
+  promoSheetTitle: { fontSize: 17, fontWeight: '700', color: '#1a1a1a', marginBottom: 4 },
+  promoRow: { flexDirection: 'row', alignItems: 'center', padding: 14, borderWidth: 1, borderColor: '#f0f0f0', borderRadius: 12 },
+  promoRowActive: { borderColor: '#4CAF6F', backgroundColor: '#f0faf4' },
+  closeSheet: { alignItems: 'center', paddingVertical: 12 },
 });

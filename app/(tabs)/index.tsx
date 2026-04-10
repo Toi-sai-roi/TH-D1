@@ -2,19 +2,10 @@ import { ScrollView, View, Text, TouchableOpacity, StyleSheet } from 'react-nati
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useCart } from '../../context/CartContext';
+import { ALL_PRODUCTS, Product } from '../../constants/products'; // ← thêm dòng này
 
-const EXCLUSIVE = [
-  { id: '1', name: 'Organic broccoli', weight: '1kg', price: 4.99, icon: '🥦' },
-  { id: '2', name: 'Crimson Tomato', weight: '1kg', price: 4.99, icon: '🍅' },
-  { id: '3', name: 'Beef', weight: '1kg', price: 5.99, icon: '🥩' },
-  { id: '4', name: 'Broiler Chicken', weight: '1kg', price: 6.99, icon: '🍗' },
-];
-
-const BEST_SELLING = [
-  { id: '5', name: 'Bell Pepper', weight: '1kg', price: 3.99, icon: '🫑' },
-  { id: '6', name: 'Ginger', weight: '250g', price: 2.99, icon: '🫚' },
-  { id: '7', name: 'Egg Chicken', weight: '4pcs', price: 1.99, icon: '🥚' },
-];
+const EXCLUSIVE = ALL_PRODUCTS.filter((p: Product) => p.tags?.includes('exclusive')).slice(0, 4);
+const BEST_SELLING = ALL_PRODUCTS.filter((p: Product) => p.tags?.includes('bestselling')).slice(0, 4);
 
 const GROCERIES = [
   { id: 'pulses', name: 'Pulses', icon: '🫘' },
@@ -32,8 +23,7 @@ export default function HomeScreen() {
       {/* Header */}
       <View style={s.header}>
         <Text style={s.logo}>🥕</Text>
-        <Text style={s.location}>📍 Dhaka, Banasree</Text>
-        
+        <Text style={s.location}>📍 Xuân Phương, Hà Nội</Text>
       </View>
       
       {/* Search */}
@@ -52,7 +42,7 @@ export default function HomeScreen() {
       </View>
 
       {/* Exclusive Offer */}
-      <SectionHeader title="Exclusive Offer" />
+      <SectionHeader title="Exclusive Offer" onSeeAll={() => router.push({ pathname: '/section/[tag]', params: { tag: 'exclusive' } })} />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.row}>
         {EXCLUSIVE.map(p => (
           <ProductCard key={p.id} item={p} onPress={() => router.push({ pathname: '/product/[id]', params: { id: p.id } })} onAdd={() => addItem({ ...p, img: null })} />
@@ -60,10 +50,10 @@ export default function HomeScreen() {
       </ScrollView>
 
       {/* Best Selling */}
-      <SectionHeader title="Best Selling" />
+      <SectionHeader title="Best Selling" onSeeAll={() => router.push({ pathname: '/section/[tag]', params: { tag: 'bestselling' } })} />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.row}>
         {BEST_SELLING.map(p => (
-          <ProductCard key={p.id} item={p} onPress={() => router.push(`../product/${p.id}`)} onAdd={() => addItem({ ...p, img: null })} />
+          <ProductCard key={p.id} item={p} onPress={() => router.push({ pathname: '/product/[id]', params: { id: p.id } })} onAdd={() => addItem({ ...p, img: null })} />
         ))}
       </ScrollView>
 
@@ -83,14 +73,19 @@ export default function HomeScreen() {
   );
 }
 
-function SectionHeader({ title }: { title: string }) {
+function SectionHeader({ title, onSeeAll }: { title: string; onSeeAll?: () => void }) {
   return (
     <View style={s.sectionHeader}>
       <Text style={s.sectionTitle}>{title}</Text>
-      <TouchableOpacity><Text style={s.seeAll}>See all</Text></TouchableOpacity>
+      {onSeeAll && (
+        <TouchableOpacity onPress={onSeeAll}>
+          <Text style={s.seeAll}>See all</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
+
 
 function ProductCard({ item, onPress, onAdd }: { item: any; onPress: () => void; onAdd: () => void }) {
   return (

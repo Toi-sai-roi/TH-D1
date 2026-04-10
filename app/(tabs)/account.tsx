@@ -18,11 +18,12 @@ const MENU = [
   { label: "My Details", icon: "person-outline", route: null },
   { label: "Delivery Address", icon: "location-outline", route: null },
   { label: "Payment Methods", icon: "card-outline", route: null },
-  { label: "Promo Card", icon: "pricetag-outline", route: null },
+  { label: 'Promo Card', icon: 'pricetag-outline', route: '/promo' },
   { label: "Rate Us", icon: "star-outline", route: null },
   { label: "Help", icon: "help-circle-outline", route: null },
   { label: "About", icon: "information-circle-outline", route: null },
 ];
+
 
 export default function AccountScreen() {
   const router = useRouter();
@@ -169,17 +170,28 @@ export default function AccountScreen() {
             <Text style={s.emptyText}>Chưa có đơn hàng nào 🛒</Text>
           ) : (
             orders.map((order) => (
-              <View key={order.id} style={s.orderCard}>
-                <View style={s.orderHeader}>
-                  <Text style={s.orderId}>#{order.id.slice(-5)}</Text>
-                  <Text style={s.orderDate}>{order.date}</Text>
-                  <Text style={s.orderTotal}>${order.total.toFixed(2)}</Text>
-                </View>
-                {order.items.map((item) => (
-                  <Text key={item.id} style={s.orderItem}>
-                    {item.icon} {item.name} × {item.qty}
+            <View key={order.id} style={s.orderCard}>
+              <View style={s.orderHeader}>
+                <Text style={s.orderId}>#{order.id.slice(-5)}</Text>
+                <Text style={s.orderDate}>{order.date}</Text>
+                {/* Badge status */}
+                <View style={[s.statusBadge, order.status === 'failed' ? s.badgeFailed : s.badgeSuccess]}>
+                  <Text style={s.statusText}>
+                    {order.status === 'failed' ? '✗ Failed' : '✓ Success'}
                   </Text>
-                ))}
+                </View>
+                <Text style={s.orderTotal}>${order.total.toFixed(2)}</Text>
+              </View>
+              {order.items.map((item) => (
+                <Text key={item.id} style={s.orderItem}>
+                  {item.icon} {item.name} × {item.qty}
+                </Text>
+              ))}
+              {order.discount > 0 && (
+              <Text style={{ fontSize: 11, color: '#4CAF6F' }}>
+                Saved ${order.discount.toFixed(2)}
+              </Text>
+              )}  
               </View>
             ))
           )}
@@ -259,7 +271,7 @@ export default function AccountScreen() {
             {!rateDone ? (
               <>
                 <Text style={[s.modalTitle, { textAlign: "center" }]}>
-                  Đánh giá app 🫰🏻
+                  Đánh giá app ✨
                 </Text>
                 <Text
                   style={{
@@ -398,6 +410,7 @@ export default function AccountScreen() {
   );
 }
 
+
 const s = StyleSheet.create({
   container: {
     flex: 1,
@@ -463,6 +476,11 @@ const s = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 6,
   },
+  statusBadge: { borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
+  badgeSuccess: { backgroundColor: '#e8f5e9' },
+  badgeFailed: { backgroundColor: '#ffebee' },
+  statusText: { fontSize: 11, fontWeight: '700', color: '#1a1a1a' },
+
   orderId: { fontSize: 12, fontWeight: "700", color: "#1a1a1a" },
   orderDate: { fontSize: 12, color: "#aaa" },
   orderTotal: { fontSize: 12, fontWeight: "700", color: "#4CAF6F" },

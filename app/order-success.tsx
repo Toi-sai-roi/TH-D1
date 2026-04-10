@@ -1,16 +1,12 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
-import { useCart } from '../context/CartContext';
+
 
 export default function OrderSuccessScreen() {
   const router = useRouter();
-  const { placeOrder } = useCart();
 
-  useEffect(() => {
-    placeOrder(); // lưu order + clear cart ngay khi vào màn này
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps  
+  
 
   return (
     <View style={s.container}>
