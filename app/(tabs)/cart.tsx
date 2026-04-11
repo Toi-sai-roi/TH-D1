@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Platform,
 } from "react-native";
 import { useCart } from "../../context/CartContext";
 
@@ -15,11 +16,17 @@ export default function CartScreen() {
   const { items, updateQty, total, clearCart } = useCart();
 
   const handleClearCart = () => {
+  if (Platform.OS === 'web') {
+    if (window.confirm('Bạn có chắc muốn xoá tất cả sản phẩm?')) {
+      clearCart();
+    }
+  } else {
     Alert.alert("Xoá giỏ hàng", "Bạn có chắc muốn xoá tất cả sản phẩm?", [
       { text: "Huỷ", style: "cancel" },
       { text: "Xoá hết", style: "destructive", onPress: clearCart },
     ]);
-  };
+  }
+};
 
   return (
     <View style={s.container}>

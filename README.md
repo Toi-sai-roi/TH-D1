@@ -1,5 +1,84 @@
 Lê Văn Tùng - 23810310325
 
+11 - 4 - 2026
+
+## ✅ Chức năng
+
+### 1. Xác thực & Lưu đăng nhập
+- Login lưu user vào AsyncStorage
+- Tự động đăng nhập lại khi mở app (Auto Login)
+- Session tự động hết hạn sau 7 ngày
+- Logout xóa session, về màn hình đăng nhập
+- Đăng ký tài khoản mới, validate trùng email
+
+### 2. Giỏ hàng
+- Thêm sản phẩm vào giỏ
+- Tăng/giảm số lượng, xóa sản phẩm
+- Lưu giỏ hàng vào AsyncStorage, persist sau reload
+- Dữ liệu riêng theo từng tài khoản
+
+### 3. Đơn hàng
+- Checkout lưu đơn vào AsyncStorage
+- Hiển thị danh sách đơn hàng (sản phẩm, tổng tiền, thời gian)
+- Persist sau reload
+
+### Bonus
+⭐ Phân quyền Admin / User (role-based access)
+⭐ Dữ liệu cart/orders riêng theo từng tài khoản
+⭐ Revenue Report toàn hệ thống (chỉ Admin thấy)
+⭐ Đăng ký tài khoản mới + validate trùng email
+⭐ Thông báo mặc định khi lần đầu đăng nhập
+⭐ Tự động hết hạn session sau 30 giây (demo)
+⭐ StorageService — custom storage layer (try/catch, JSON tập trung)
+---
+
+## 🔑 Tài khoản demo
+
+| tung@shop.com | tung123 | User |
+| binh@shop.com | binh123 | User |
+| admin@shop.com | admin123 | Admin |
+
+---
+
+## 🛠 Kỹ thuật
+
+- `@react-native-async-storage/async-storage`
+- `async/await` + `try/catch`
+- `JSON.stringify` / `JSON.parse`
+- File riêng: `services/StorageService.ts`
+- React Context API (`CartContext`)
+
+---
+
+## 🚀 Hướng dẫn chạy app
+
+```bash
+git clone https://github.com/Toi-sai-roi/TH-D1
+cd my-app
+npm install
+npx expo start
+```
+
+Quét QR bằng Expo Go trên điện thoại hoặc chạy trên web bằng `npx expo start --web`
+
+---
+
+## Câu hỏi lý thuyết
+
+**1. AsyncStorage hoạt động như thế nào?**  
+AsyncStorage là hệ thống lưu trữ key-value bất đồng bộ, lưu dữ liệu dạng string trên thiết bị. Dữ liệu được lưu dưới dạng JSON thông qua `JSON.stringify` và đọc lại bằng `JSON.parse`.
+
+**2. Vì sao dùng AsyncStorage thay vì biến state?**  
+Biến state chỉ tồn tại trong bộ nhớ, mất khi app bị tắt. AsyncStorage lưu xuống bộ nhớ thiết bị nên dữ liệu vẫn còn sau khi reload hoặc tắt app.
+
+**3. So sánh với Context API**  
+Context API quản lý state trong bộ nhớ RAM, chia sẻ dữ liệu giữa các component nhưng không persist. AsyncStorage lưu xuống ổ đĩa, persist sau reload nhưng không reactive. Trong app này em kết hợp cả hai: Context API để quản lý state realtime, AsyncStorage để persist dữ liệu.
+
+## Demo
+
+[text](services/StorageService.ts) ![text](assets/scr-sh/28310310325_01_login.png) ![text](assets/scr-sh/28310310325_02_autologin.png) ![text](assets/scr-sh/28310310325_03_logout.png) ![text](assets/scr-sh/28310310325_04_addCart.png) ![text](assets/scr-sh/28310310325_05_cartReload.png) ![text](assets/scr-sh/23810310325_06_updateQty.png) ![text](assets/scr-sh/23810310325_07_orderSuccess.png) ![text](assets/scr-sh/23810310325_08_orderList.png) ![text](<assets/scr-sh/23810310325_09_orderList - Reload.png>)
+
+<video controls src="assets/scr-sh/bàilamf.mp4" title="kết quả"></video>
 10 - 4 - 2026
 - 4 screen
  Ngoài ra:

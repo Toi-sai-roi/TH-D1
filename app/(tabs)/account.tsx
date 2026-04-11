@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { useCart } from "../../context/CartContext";
+import { logoutUser } from '../../services/StorageService'; // Hàm này sẽ xóa thông tin user hiện tại khỏi AsyncStorage để đăng xuất, không xóa data liên quan đến cart, favs, orders,... để khi đăng nhập lại vẫn giữ nguyên
 
 const MENU = [
   { label: "Favourites", icon: "heart-outline", route: "/favourites" },
@@ -27,7 +28,7 @@ const MENU = [
 
 export default function AccountScreen() {
   const router = useRouter();
-  const { orders, role } = useCart();
+  const { orders, role, allOrders, clearUserData, currentEmail } = useCart();
   const [showOrders, setShowOrders] = useState(false);
   const [showRevenue, setShowRevenue] = useState(false);
 
@@ -42,13 +43,14 @@ export default function AccountScreen() {
   const [draftEmail, setDraftEmail] = useState(email);
 
   useEffect(() => {
+    if (!currentEmail) return;
     (async () => {
-      const n = await AsyncStorage.getItem("profile_name");
-      const e = await AsyncStorage.getItem("profile_email");
-      if (n) setName(n);
-      if (e) setEmail(e);
+      const n = await AsyncStorage.getItem(`profile_name_${currentEmail}`);
+      const e = await AsyncStorage.getItem(`profile_email_${currentEmail}`);
+      setName(n || currentEmail.split('@')[0]);
+      setEmail(e || currentEmail);
     })();
-  }, []);
+  }, [currentEmail]);
 
   const openEdit = () => {
     setDraftName(name);
@@ -61,20 +63,20 @@ export default function AccountScreen() {
     const newEmail = draftEmail.trim() || email;
     setName(newName);
     setEmail(newEmail);
-    await AsyncStorage.setItem("profile_name", newName);
-    await AsyncStorage.setItem("profile_email", newEmail);
+    await AsyncStorage.setItem(`profile_name_${currentEmail}`, newName);
+    await AsyncStorage.setItem(`profile_email_${currentEmail}`, newEmail);
     setShowEdit(false);
   };
 
   // --- Revenue stats tính từ orders ---
-  const totalOrders = orders.length;
-  const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+  const totalOrders = allOrders.length;
+  const totalRevenue = allOrders.reduce((sum, o) => sum + o.total, 0);
   const avgOrder = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
   // Sản phẩm bán chạy nhất
   const itemCount: Record<string, { name: string; icon: string; qty: number }> =
     {};
-  orders.forEach((o) =>
+  allOrders.forEach((o) =>
     o.items.forEach((item) => {
       if (!itemCount[item.id])
         itemCount[item.id] = { name: item.name, icon: item.icon, qty: 0 };
@@ -394,7 +396,8 @@ export default function AccountScreen() {
       {/* Logout */}
       <TouchableOpacity
         style={s.logout}
-        onPress={() => router.replace("/(auth)/login")}
+        // onPress={() => router.replace("/(auth)/login")}
+        onPress={async () => { clearUserData(); await logoutUser(); router.replace("/(auth)/login"); }}
       >
         <Ionicons
           name="log-out-outline"
