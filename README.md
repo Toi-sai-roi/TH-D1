@@ -1,5 +1,11 @@
 Lê Văn Tùng - 23810310325
 
+11 - 4 - 2026 (buổi chiều)
+- Thêm màn Forgot Password (đổi mật khẩu cho tài khoản đã đăng ký)
+- Thêm quản lý địa chỉ giao hàng (thêm/xóa/chọn) trong Checkout và Account
+- Thêm Payment Methods, Help FAQ, About modal trong Account
+- Tách Order History ra màn hình riêng (`app/orders.tsx`)
+
 11 - 4 - 2026
 
 ## ✅ Chức năng
