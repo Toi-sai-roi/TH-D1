@@ -3,7 +3,7 @@ Lê Văn Tùng - 23810310325
 11 - 4 - 2026 (buổi chiều)
 - Thêm màn Forgot Password (đổi mật khẩu cho tài khoản đã đăng ký)
 - Thêm quản lý địa chỉ giao hàng (thêm/xóa/chọn) trong Checkout và Account
-- Thêm Payment Methods, Help FAQ, About modal trong Account
+- Hoàn thiện nốt các mục trong Account: Payment Methods, Help FAQ, About modal
 - Tách Order History ra màn hình riêng (`app/orders.tsx`)
 
 11 - 4 - 2026
@@ -51,9 +51,8 @@ Lê Văn Tùng - 23810310325
 - `@react-native-async-storage/async-storage`
 - `async/await` + `try/catch`
 - `JSON.stringify` / `JSON.parse`
-- File riêng: `services/StorageService.ts` 
-(Em có tổ chức logic AsyncStorage vào file riêng services/StorageService.ts, đóng vai trò như một custom storage layer, giúp tái sử dụng và không cần viết lặp try/catch, JSON.stringify/parse ở nhiều nơi.
-Về bản chất StorageService của em hoạt động tương tự custom hook mà thầy yêu cầu, chỉ khác là em tách thành service file thay vì hook để dùng được cả ngoài component.)
+- `services/StorageService.ts` — custom storage layer (tổ chức logic AsyncStorage vào file riêng, giúp tái sử dụng và không cần viết lặp try/catch, JSON.stringify/parse ở nhiều nơi)
+- `hooks/useStorage.ts` — custom hook wrap StorageService, có loading state (về bản chất StorageService đã hoạt động tương tự, nhưng hook được tạo thêm để đúng convention `use` prefix và dùng được trong component)
 - React Context API (`CartContext`)
 
 ---
