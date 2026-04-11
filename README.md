@@ -78,7 +78,8 @@ Context API quản lý state trong bộ nhớ RAM, chia sẻ dữ liệu giữa 
 
 [text](services/StorageService.ts) ![text](assets/scr-sh/28310310325_01_login.png) ![text](assets/scr-sh/28310310325_02_autologin.png) ![text](assets/scr-sh/28310310325_03_logout.png) ![text](assets/scr-sh/28310310325_04_addCart.png) ![text](assets/scr-sh/28310310325_05_cartReload.png) ![text](assets/scr-sh/23810310325_06_updateQty.png) ![text](assets/scr-sh/23810310325_07_orderSuccess.png) ![text](assets/scr-sh/23810310325_08_orderList.png) ![text](<assets/scr-sh/23810310325_09_orderList - Reload.png>)
 
-<video controls src="assets/scr-sh/bàilamf.mp4" title="kết quả"></video>
+## 🎥 Video Demo
+[▶ Bấm vào đây để xem video demo](screenshots/bailam.mp4)
 10 - 4 - 2026
 - 4 screen
  Ngoài ra:
