@@ -19,6 +19,7 @@ export const dataKeys = (email: string) => ({ // Thêm email vào key để phâ
   orders: `cart_orders_${email}`,
   notifs: `notifs_${email}`,
   reviews: `reviews_${email}`,
+  addresses: `addresses_${email}`,
 });
 
 // ===== ACCOUNTS CỨNG =====

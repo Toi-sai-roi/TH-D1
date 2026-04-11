@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Modal, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -6,17 +6,30 @@ import { useCart, PROMOS } from '../context/CartContext';
 
 export default function CheckoutScreen() {
   const router = useRouter();
-  const [delivery, setDelivery] = useState('');
   const [payment, setPayment] = useState('card');
   const [showPromos, setShowPromos] = useState(false);
+  const [showAddress, setShowAddress] = useState(false);
+  const [newLabel, setNewLabel] = useState('');
+  const [newDetail, setNewDetail] = useState('');
 
-  const { total, items, appliedPromo, applyPromo, removePromo, discount, finalTotal, createOrder } = useCart();
+  const {
+    total, items, appliedPromo, applyPromo, removePromo,
+    discount, finalTotal, createOrder,
+    addresses, addAddress, removeAddress, selectedAddress, selectAddress,
+  } = useCart();
 
   const handlePlaceOrder = () => {
     if (items.length === 0) return;
     const success = Math.random() > 0.2;
     createOrder(success ? 'success' : 'failed');
     router.replace(success ? '../order-success' : '../order-failed');
+  };
+
+  const handleAddAddress = () => {
+    if (!newLabel.trim() || !newDetail.trim()) return;
+    addAddress({ label: newLabel.trim(), detail: newDetail.trim() });
+    setNewLabel('');
+    setNewDetail('');
   };
 
   return (
@@ -38,8 +51,16 @@ export default function CheckoutScreen() {
             </TouchableOpacity>
           </View>
 
-          <Row label="Delivery" value={delivery || 'Select Method'} onPress={() => setDelivery('Standard')} arrow />
-          <Row label="Payment" value={payment === 'card' ? '💳' : '💵'} onPress={() => setPayment(p => p === 'card' ? 'cash' : 'card')} arrow />
+          {/* Delivery row */}
+          <TouchableOpacity style={s.row} onPress={() => setShowAddress(true)}>
+            <Text style={s.rowLabel}>Delivery</Text>
+            <Text style={s.rowValue} numberOfLines={1}>
+              {selectedAddress ? `${selectedAddress.label} — ${selectedAddress.detail}` : 'Select Address'}
+            </Text>
+            <Ionicons name="chevron-forward" size={16} color="#aaa" style={{ marginLeft: 4 }} />
+          </TouchableOpacity>
+
+          <Row label="Payment" value={payment === 'card' ? '💳 Card' : '💵 Cash'} onPress={() => setPayment(p => p === 'card' ? 'cash' : 'card')} arrow />
 
           {/* Promo Code row */}
           <TouchableOpacity style={s.row} onPress={() => setShowPromos(true)}>
@@ -57,7 +78,6 @@ export default function CheckoutScreen() {
             <Ionicons name="chevron-forward" size={16} color="#aaa" style={{ marginLeft: 4 }} />
           </TouchableOpacity>
 
-          {/* Discount row — chỉ hiện khi có promo */}
           {appliedPromo && (
             <View style={s.row}>
               <Text style={[s.rowLabel, { color: '#4CAF6F' }]}>Discount ({appliedPromo.percent}%)</Text>
@@ -68,7 +88,6 @@ export default function CheckoutScreen() {
           <Row label="Total Cost" value={`$${finalTotal.toFixed(2)}`} />
         </View>
 
-        {/* You saved banner */}
         {appliedPromo && (
           <View style={s.savedBanner}>
             <Ionicons name="checkmark-circle" size={16} color="#4CAF6F" />
@@ -80,7 +99,6 @@ export default function CheckoutScreen() {
           By placing an order you agree to our{' '}
           <Text style={s.link}>Terms And Conditions</Text>
         </Text>
-
         <View style={{ height: 100 }} />
       </ScrollView>
 
@@ -90,7 +108,66 @@ export default function CheckoutScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Promo picker modal */}
+      {/* Address Modal */}
+      <Modal visible={showAddress} transparent animationType="slide">
+        <View style={s.overlay}>
+          <View style={s.promoSheet}>
+            <Text style={s.promoSheetTitle}>Địa chỉ giao hàng</Text>
+
+            {addresses.length === 0 && (
+              <Text style={{ color: '#aaa', fontSize: 13, marginBottom: 8 }}>Chưa có địa chỉ nào</Text>
+            )}
+
+            {addresses.map(a => (
+              <TouchableOpacity
+                key={a.id}
+                style={[s.promoRow, selectedAddress?.id === a.id && s.promoRowActive]}
+                onPress={() => { selectAddress(a); setShowAddress(false); }}
+              >
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontWeight: '700', color: '#1a1a1a' }}>{a.label}</Text>
+                  <Text style={{ fontSize: 13, color: '#888', marginTop: 2 }}>{a.detail}</Text>
+                </View>
+                <TouchableOpacity onPress={() => removeAddress(a.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                  <Ionicons name="trash-outline" size={18} color="#f44336" />
+                </TouchableOpacity>
+                {selectedAddress?.id === a.id && (
+                  <Ionicons name="checkmark-circle" size={22} color="#4CAF6F" style={{ marginLeft: 8 }} />
+                )}
+              </TouchableOpacity>
+            ))}
+
+            {/* Thêm địa chỉ mới */}
+            <View style={{ marginTop: 12, gap: 8 }}>
+              <TextInput
+                style={s.input}
+                placeholder='Tên địa chỉ (vd: Nhà, Công ty)'
+                value={newLabel}
+                onChangeText={setNewLabel}
+              />
+              <TextInput
+                style={s.input}
+                placeholder='Địa chỉ chi tiết'
+                value={newDetail}
+                onChangeText={setNewDetail}
+              />
+              <TouchableOpacity
+                style={[s.placeBtn, (!newLabel || !newDetail) && { backgroundColor: '#ccc' }]}
+                disabled={!newLabel || !newDetail}
+                onPress={handleAddAddress}
+              >
+                <Text style={s.placeBtnText}>+ Thêm địa chỉ</Text>
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity style={s.closeSheet} onPress={() => setShowAddress(false)}>
+              <Text style={{ color: '#aaa', fontWeight: '600', fontSize: 15 }}>Đóng</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Promo Modal */}
       <Modal visible={showPromos} transparent animationType="slide">
         <View style={s.overlay}>
           <View style={s.promoSheet}>
@@ -146,7 +223,7 @@ const s = StyleSheet.create({
   boxTitle: { fontSize: 16, fontWeight: '700', color: '#1a1a1a' },
   row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, borderTopWidth: 1, borderColor: '#f5f5f5' },
   rowLabel: { flex: 1, fontSize: 14, color: '#1a1a1a' },
-  rowValue: { fontSize: 14, color: '#aaa' },
+  rowValue: { fontSize: 14, color: '#aaa', maxWidth: '50%' },
   terms: { fontSize: 12, color: '#aaa', textAlign: 'center', lineHeight: 18 },
   link: { color: '#4CAF6F' },
   footer: { position: 'absolute', bottom: 32, left: 16, right: 16 },
@@ -160,4 +237,5 @@ const s = StyleSheet.create({
   promoRow: { flexDirection: 'row', alignItems: 'center', padding: 14, borderWidth: 1, borderColor: '#f0f0f0', borderRadius: 12 },
   promoRowActive: { borderColor: '#4CAF6F', backgroundColor: '#f0faf4' },
   closeSheet: { alignItems: 'center', paddingVertical: 12 },
+  input: { borderWidth: 1, borderColor: '#eee', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, fontSize: 14 },
 });

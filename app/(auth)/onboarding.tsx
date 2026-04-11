@@ -1,16 +1,16 @@
-import { View, Text, ImageBackground, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ImageBackground, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function OnboardingScreen() {
   const router = useRouter();
+  const { width, height } = useWindowDimensions();
 
   return (
     <ImageBackground
       source={require('../../assets/scr-sh/onboarding.png')}
-      style={s.bg}
+      style={[s.bg, { width, height }]}
       resizeMode="cover"
     >
-      
       <View style={s.overlay} />
       <View style={s.content}>
         <Text style={s.icon}>🥕</Text>
@@ -27,7 +27,7 @@ export default function OnboardingScreen() {
 const s = StyleSheet.create({
   bg: { flex: 1 },
   overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.15)' },
-  icon: { fontSize: 55, textAlign: 'center'},
+  icon: { fontSize: 55, textAlign: 'center' },
   content: {
     flex: 1,
     justifyContent: 'flex-end',

@@ -45,7 +45,9 @@ Lê Văn Tùng - 23810310325
 - `@react-native-async-storage/async-storage`
 - `async/await` + `try/catch`
 - `JSON.stringify` / `JSON.parse`
-- File riêng: `services/StorageService.ts`
+- File riêng: `services/StorageService.ts` 
+(Em có tổ chức logic AsyncStorage vào file riêng services/StorageService.ts, đóng vai trò như một custom storage layer, giúp tái sử dụng và không cần viết lặp try/catch, JSON.stringify/parse ở nhiều nơi.
+Về bản chất StorageService của em hoạt động tương tự custom hook mà thầy yêu cầu, chỉ khác là em tách thành service file thay vì hook để dùng được cả ngoài component.)
 - React Context API (`CartContext`)
 
 ---
@@ -76,12 +78,13 @@ Context API quản lý state trong bộ nhớ RAM, chia sẻ dữ liệu giữa 
 
 ## Demo
 
-[text](services/StorageService.ts) ![text](assets/scr-sh/28310310325_01_login.png) ![text](assets/scr-sh/28310310325_02_autologin.png) ![text](assets/scr-sh/28310310325_03_logout.png) ![text](assets/scr-sh/28310310325_04_addCart.png) ![text](assets/scr-sh/28310310325_05_cartReload.png) ![text](assets/scr-sh/23810310325_06_updateQty.png) ![text](assets/scr-sh/23810310325_07_orderSuccess.png) ![text](assets/scr-sh/23810310325_08_orderList.png) ![text](<assets/scr-sh/23810310325_09_orderList - Reload.png>)
+![text](assets/scr-sh/28310310325_01_login.png) ![text](assets/scr-sh/28310310325_02_autologin.png) ![text](assets/scr-sh/28310310325_03_logout.png) ![text](assets/scr-sh/28310310325_04_addCart.png) ![text](assets/scr-sh/28310310325_05_cartReload.png) ![text](assets/scr-sh/23810310325_06_updateQty.png) ![text](assets/scr-sh/23810310325_07_orderSuccess.png) ![text](assets/scr-sh/23810310325_08_orderList.png) ![text](<assets/scr-sh/23810310325_09_orderList - Reload.png>)
 
 ## 🎥 Video Demo
 [▶ Bấm vào đây để xem video demo](https://youtu.be/vqvwiP1lcHo)
 
 10 - 4 - 2026
+
 - 4 screen
  Ngoài ra:
 - thêm active cho nút 'see all'

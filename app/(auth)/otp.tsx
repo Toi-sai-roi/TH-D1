@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 
 export default function OtpScreen() {
   const router = useRouter();
@@ -14,12 +15,18 @@ export default function OtpScreen() {
     if (val && idx < 3) refs[idx + 1].current?.focus();
   };
 
+  const handleKeyPress = (e: any, idx: number) => {
+    if (e.nativeEvent.key === 'Backspace' && !otp[idx] && idx > 0) {
+      refs[idx - 1].current?.focus();
+    }
+  };
+
   const filled = otp.every(d => d !== '');
 
   return (
     <View style={s.container}>
       <TouchableOpacity onPress={() => router.back()} style={s.back}>
-        <Text style={s.backText}>{'<'}</Text>
+        <Ionicons name="chevron-back" size={24} color="#1a1a1a" />
       </TouchableOpacity>
 
       <Text style={s.title}>Enter your 4-digit code</Text>
@@ -35,6 +42,7 @@ export default function OtpScreen() {
             maxLength={1}
             value={d}
             onChangeText={v => handleChange(v, i)}
+            onKeyPress={e => handleKeyPress(e, i)}
           />
         ))}
       </View>
@@ -48,7 +56,7 @@ export default function OtpScreen() {
         disabled={!filled}
         onPress={() => router.push('/(auth)/location')}
       >
-        <Text style={s.btnText}>{'>'}</Text>
+        <Ionicons name="chevron-forward" size={24} color="#1a1a1a" />
       </TouchableOpacity>
     </View>
   );

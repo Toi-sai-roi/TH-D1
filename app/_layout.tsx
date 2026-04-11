@@ -32,6 +32,7 @@ function AppNavigator() {
       <Stack.Screen name="index" />
       <Stack.Screen name="(auth)" />
       <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="orders" />
       <Stack.Screen name="product/[id]" />
       <Stack.Screen name="category/[name]" />
       <Stack.Screen name="search" />

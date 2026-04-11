@@ -46,13 +46,13 @@ export default function SignUpScreen() {
 
       <Text style={s.label}>Username</Text>
       <TextInput
-        style={s.input} placeholder="e.g. Afsar Hossen"
+        style={s.input} placeholder="Your username"
         value={username} onChangeText={(t) => { setUsername(t); setError(""); }}
       />
 
       <Text style={s.label}>Email</Text>
       <TextInput
-        style={s.input} placeholder="mshuvo97@gmail.com"
+        style={s.input} placeholder="yourname@gmail.com"
         keyboardType="email-address" autoCapitalize="none"
         value={email} onChangeText={(t) => { setEmail(t); setError(""); }}
       />
@@ -61,13 +61,13 @@ export default function SignUpScreen() {
       <View style={s.passRow}>
         <TextInput
           style={[s.input, { flex: 1, marginBottom: 0 }]}
-          placeholder="••••••••"
+          placeholder="your password"
           secureTextEntry={!showPass}
           value={password}
           onChangeText={(t) => { setPassword(t); setError(""); }}
         />
         <TouchableOpacity onPress={() => setShowPass((p) => !p)} style={s.eyeBtn}>
-          <Text style={s.eye}>{showPass ? "🙈" : "👁️"}</Text>
+          <Text style={s.eye}>{showPass ? "🙈" : "👀"}</Text>
         </TouchableOpacity>
       </View>
 

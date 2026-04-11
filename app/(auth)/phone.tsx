@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 
 export default function PhoneScreen() {
   const router = useRouter();
   const [phone, setPhone] = useState('');
+  const isValid = /^(03|05|07|08|09)\d{8}$/.test(phone.trim());
 
   return (
     <View style={s.container}>
-      <TouchableOpacity onPress={() => router.back()} style={s.back}>
-        <Text style={s.backText}>{'<'}</Text>
-      </TouchableOpacity>
+      <TouchableOpacity onPress={() => router.back()}>
+          <Ionicons name="chevron-back" size={24} color="#1a1a1a" />
+        </TouchableOpacity>
 
       <Text style={s.title}>Enter your mobile number</Text>
 
@@ -23,16 +25,21 @@ export default function PhoneScreen() {
           placeholder="Phone number"
           keyboardType="phone-pad"
           value={phone}
-          onChangeText={setPhone}
+          onChangeText={(text) => {
+            // ✅ chỉ cho nhập số
+            const cleaned = text.replace(/[^0-9]/g, '');
+            setPhone(cleaned);
+          }}
+          maxLength={10}
         />
       </View>
 
       <TouchableOpacity
-        style={[s.btn, !phone && s.btnDisabled]}
-        disabled={!phone}
+        style={[s.btn, !isValid && s.btnDisabled]} 
+        disabled={!isValid} 
         onPress={() => router.push('/(auth)/otp')}
       >
-        <Text style={s.btnText}>{'>'}</Text>
+        <Ionicons name="chevron-forward" size={24} color="#1a1a1a" />
       </TouchableOpacity>
     </View>
   );

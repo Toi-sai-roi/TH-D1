@@ -6,6 +6,7 @@ export default function LocationScreen() {
   const router = useRouter();
   const [zone, setZone] = useState('');
   const [area, setArea] = useState('');
+  const isValid = zone.trim().length > 0 && area.trim().length > 0;
 
   return (
     <View style={s.container}>
@@ -21,9 +22,12 @@ export default function LocationScreen() {
       <TextInput style={s.input} placeholder="Type of your area" value={area} onChangeText={setArea} />
 
       <TouchableOpacity
-        style={[s.btn, (!zone || !area) && s.btnDisabled]}
-        disabled={!zone || !area}
-        onPress={() => router.replace('/(auth)/login')}
+        style={[s.btn, !isValid && s.btnDisabled]}
+        disabled={!isValid}
+        onPress={() => {
+          if (!isValid) return; 
+          router.replace('/(auth)/login');
+        }}
       >
         <Text style={s.btnText}>Submit</Text>
       </TouchableOpacity>

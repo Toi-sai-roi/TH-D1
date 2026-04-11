@@ -10,7 +10,10 @@ export type FavItem = {
   id: string; name: string; weight: string; price: number; icon: string;
 };
 export type Order = {
-  id: string; date: string; items: CartItem[]; total: number; discount: number; status: "success" | "failed";
+  id: string; date: string; items: CartItem[]; total: number; discount: number; status: "success" | "failed"; address?: Address | null;
+};
+export type Address = {
+  id: string; label: string; detail: string; 
 };
 export type FilterState = { cats: string[]; brands: string[] };
 export type Notif = {
@@ -48,6 +51,12 @@ type CartContextType = {
 
   orders: Order[];
   createOrder: (status: "success" | "failed") => void;
+
+  addresses: Address[];
+  addAddress: (a: Omit<Address, 'id'>) => void;
+  removeAddress: (id: string) => void;
+  selectedAddress: Address | null;
+  selectAddress: (a: Address) => void;
 
   promos: PromoCode[];
   appliedPromo: PromoCode | null;
@@ -93,6 +102,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [currentEmail, setCurrentEmail] = useState<string | null>(null);
   const [allOrders, setAllOrders]       = useState<Order[]>([]);
   const [loaded, setLoaded]             = useState(false);
+  const [addresses, setAddresses]       = useState<Address[]>([]);
+  const [selectedAddress, 
+    setSelectedAddress]                 = useState<Address | null>(null);
 
   // dùng ref để biết đang là role gì mà không trigger re-render
   const roleRef = useRef<Role>("user");
@@ -101,12 +113,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const loadUserData = async (email: string, userRole?: Role) => {
     try {
       const keys = dataKeys(email);
-      const [i, f, o, n, r] = await Promise.all([
+      const [i, f, o, n, r, a] = await Promise.all([
         AsyncStorage.getItem(keys.items),
         AsyncStorage.getItem(keys.favs),
         AsyncStorage.getItem(keys.orders),
         AsyncStorage.getItem(keys.notifs),
         AsyncStorage.getItem(keys.reviews),
+        AsyncStorage.getItem(keys.addresses),
       ]);
       setItems(i ? JSON.parse(i) : []);
       setFavs(f ? JSON.parse(f) : []);
@@ -115,6 +128,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setNotifs(parsedNotifs.length > 0 ? parsedNotifs : [...DEFAULT_NOTIFS]);      setReviews(r ? JSON.parse(r) : []);
       setCurrentEmail(email);
       emailRef.current = email;
+      setAddresses(a ? JSON.parse(a) : []);
 
       const effectiveRole = userRole ?? roleRef.current;
       roleRef.current = effectiveRole;
@@ -143,6 +157,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     roleRef.current = "user";
     emailRef.current = null;
     setLoaded(false);
+    setAddresses([]);
+    setSelectedAddress(null);
   };
 
   /* ===== SAVE — tách riêng từng key để tránh đơ ===== */
@@ -155,12 +171,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [keys.orders,  JSON.stringify(orders)],
     [keys.notifs,  JSON.stringify(notifs)],
     [keys.reviews, JSON.stringify(reviews)],
+    [keys.addresses, JSON.stringify(addresses)],
   ]).then(() => {
     if (roleRef.current === "admin") {
       loadAllOrders().then(setAllOrders);
     }
   });
-}, [items, favs, orders, notifs, reviews, loaded, currentEmail]);
+}, [items, favs, orders, notifs, reviews, loaded, currentEmail, addresses]);
 
   /* ===== CALC ===== */
   const total       = items.reduce((s, i) => s + i.price * i.qty, 0);
@@ -201,6 +218,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       discount,
       total: finalTotal,
       status,
+      address: selectedAddress ?? null, // ← thêm
     };
     setOrders(prev => [order, ...prev]);
     if (status === "success") {
@@ -219,6 +237,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
   const isFav = (id: string) => favs.some(f => f.id === id);
 
+  /* ===== ADDRESS ===== */
+  const addAddress = (a: Omit<Address, 'id'>) => {
+    const newAddr = { ...a, id: Date.now().toString() };
+    setAddresses(prev => [...prev, newAddr]);
+    if (!selectedAddress) setSelectedAddress(newAddr);
+  };
+  const removeAddress = (id: string) => {
+    setAddresses(prev => prev.filter(a => a.id !== id));
+    if (selectedAddress?.id === id) setSelectedAddress(null);
+  };
+  const selectAddress = (a: Address) => setSelectedAddress(a);
+  
   /* ===== PROMO ===== */
   const applyPromo = (code: string): boolean => {
     const promo = PROMOS.find(p => p.code === code.toUpperCase());
@@ -259,6 +289,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         reviews, addReview, getReviews,
         role, setRole,
         loadUserData, clearUserData, currentEmail,
+        addresses, addAddress, removeAddress, selectedAddress, selectAddress,
       }}
     >
       {children}
